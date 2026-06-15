@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>빅데이터분석기사 실기 | PART 1 기본 이론</title>
+<title>빅데이터분석기사 실기 | 전체 기본 이론</title>
 <style>
   *{box-sizing:border-box}
   body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f1f5f9;color:#1e293b;margin:0}
@@ -61,8 +61,8 @@
 
 <header>
   <div class="wrap" style="padding:0">
-    <h1>빅데이터분석기사 실기 | PART 1 기본 이론</h1>
-    <p>작업형 1 · CHAPTER 01 파이썬 · CHAPTER 02 판다스</p>
+    <h1>빅데이터분석기사 실기 | 기본 이론 전체</h1>
+    <p>PART 1 작업형1 (파이썬·판다스) · PART 2 작업형2 (머신러닝) · PART 3 작업형3 (통계)</p>
   </div>
 </header>
 
@@ -71,8 +71,9 @@
     <input id="search" placeholder="섹션 검색: 예) 필터링, 슬라이싱, 문자열..." />
     <div class="ch-btns">
       <button class="ch-btn active" data-ch="">전체</button>
-      <button class="ch-btn" data-ch="ch01">CHAPTER 01 파이썬</button>
-      <button class="ch-btn" data-ch="ch02">CHAPTER 02 판다스</button>
+      <button class="ch-btn" data-ch="p1">PART 1 작업형1</button>
+      <button class="ch-btn" data-ch="p2">PART 2 작업형2</button>
+      <button class="ch-btn" data-ch="p3">PART 3 작업형3</button>
     </div>
   </div>
 
@@ -1364,6 +1365,1418 @@ print(pv_sum)
 # 피벗테이블에서 최댓값 위치 찾기
 print(pv_sum.stack().idxmax())  # ('city', 'category')`,
 },
+,
+// ══════════════════════════════════════════════════════════════════
+//  PART 2  작업형 2  머신러닝
+// ══════════════════════════════════════════════════════════════════
+
+// ── CHAPTER 01 머신러닝 기초 ──────────────────────────────────────
+{
+  ch:"p2-ch01", chTitle:"CHAPTER 01 머신러닝 기초",
+  num:"SECTION 01", title:"지도학습, 비지도학습, 강화학습",
+  tags:["지도학습","비지도학습","강화학습","label"],
+  desc:`머신러닝은 학습 방식에 따라 세 종류로 나뉩니다.<br>
+<b>지도학습(Supervised)</b>: 정답(label/target)이 있는 데이터로 학습. 분류·회귀가 해당.<br>
+<b>비지도학습(Unsupervised)</b>: 정답 없이 데이터 패턴을 학습. 군집화(K-Means), 차원축소(PCA)가 해당.<br>
+<b>강화학습(Reinforcement)</b>: 에이전트가 보상 피드백으로 최적 행동을 학습.`,
+  table:[
+    ["지도학습","입력(X) + 정답(y) → 예측 모델. 분류/회귀"],
+    ["비지도학습","입력(X)만 → 군집화, 이상치 탐지, 차원 축소"],
+    ["강화학습","환경과 상호작용하며 보상 최대화. 게임 AI 등"],
+    ["분류(Classification)","target이 범주형. 예: 합격/불합격"],
+    ["회귀(Regression)","target이 연속 수치. 예: 집 가격 예측"],
+    ["군집화(Clustering)","비슷한 샘플끼리 그룹화. K-Means"],
+  ],
+  code:`from sklearn.datasets import load_iris
+data = load_iris(as_frame=True)
+X = data.data   # 입력 특성
+y = data.target  # 정답 label
+
+print("학습 유형:", "지도학습" if y is not None else "비지도학습")
+print("클래스 수:", y.nunique())
+print("샘플 수:", len(X))`,
+  tip:`<b>시험 팁:</b> target(정답) 컬럼이 있으면 지도학습, 없으면 비지도학습입니다.`
+},
+{
+  ch:"p2-ch01", chTitle:"CHAPTER 01 머신러닝 기초",
+  num:"SECTION 02", title:"분류와 회귀",
+  tags:["분류","회귀","target","이산형","연속형"],
+  desc:`<b>분류(Classification)</b>: target이 이산형(범주). 예) 0/1, 종류 A·B·C<br>
+<b>회귀(Regression)</b>: target이 연속형(숫자). 예) 가격, 점수, 거리`,
+  table:[
+    ["이진 분류","클래스 2개. 예: 사기 여부(0/1)"],
+    ["다중 분류","클래스 3개 이상. 예: 와인 종류(0,1,2)"],
+    ["회귀","연속형 수치 예측. 예: 주택 가격"],
+    ["nunique() ≤ 10","분류 문제일 가능성 높음"],
+    ["nunique() > 10","회귀 문제일 가능성 높음"],
+  ],
+  code:`import pandas as pd
+from sklearn.datasets import load_iris, load_diabetes
+
+# 분류 데이터 (target이 이산형)
+iris = load_iris(as_frame=True)
+print("iris target 고유값:", iris.target.nunique())  # 3 → 다중 분류
+
+# 회귀 데이터 (target이 연속형)
+diabetes = load_diabetes(as_frame=True)
+print("diabetes target 고유값:", diabetes.target.nunique())  # 많음 → 회귀
+
+# 간단한 판별 함수
+def check_type(y):
+    return "분류" if y.nunique() <= 10 else "회귀"`,
+  tip:`<b>시험 팁:</b> target의 nunique()가 소수이면 분류, 매우 많으면 회귀로 판단합니다.`
+},
+{
+  ch:"p2-ch01", chTitle:"CHAPTER 01 머신러닝 기초",
+  num:"SECTION 03", title:"정형 데이터",
+  tags:["정형 데이터","비정형","테이블","CSV","feature","target"],
+  desc:`<b>정형 데이터(Structured Data)</b>: 행·열로 구성된 테이블 형태의 데이터. CSV, 엑셀, DB 등.<br>
+<b>비정형 데이터</b>: 이미지, 텍스트, 오디오 등.<br>
+빅데이터분석기사 실기는 <b>정형 데이터</b>를 다루며, feature(특성)와 target(정답)으로 구성됩니다.`,
+  table:[
+    ["feature(X)","예측에 사용하는 입력 컬럼들"],
+    ["target(y)","예측해야 하는 정답 컬럼"],
+    ["train set","모델 학습에 사용하는 데이터"],
+    ["test set","최종 예측 제출용 데이터 (정답 없음)"],
+    ["validation set","학습 중 모델 성능 평가용"],
+    ["결측치","NaN, null 값 → 전처리 필요"],
+    ["범주형 변수","문자열 컬럼 → 인코딩 필요"],
+  ],
+  code:`import pandas as pd
+
+# 시험 기본 구조
+# X_train = pd.read_csv("X_train.csv")
+# y_train = pd.read_csv("y_train.csv")
+# X_test  = pd.read_csv("X_test.csv")
+
+# 예시 데이터
+df = pd.DataFrame({
+    "age": [25,35,45],
+    "income": [3000,5000,7000],
+    "gender": ["M","F","M"],
+    "loan_default": [0,1,0]   # target
+})
+
+X = df.drop(columns=["loan_default"])
+y = df["loan_default"]
+print(X.dtypes)   # feature 자료형 확인
+print(y.value_counts())`,
+  tip:`<b>시험 팁:</b> X_train, y_train, X_test 파일 구조를 파악하는 것이 첫 번째 단계입니다.`
+},
+{
+  ch:"p2-ch01", chTitle:"CHAPTER 01 머신러닝 기초",
+  num:"SECTION 04", title:"머신러닝 프로세스",
+  tags:["전처리","학습","평가","예측","파이프라인","EDA"],
+  desc:`머신러닝의 기본 흐름입니다.`,
+  table:[
+    ["① 문제 정의","분류인지 회귀인지, 평가지표 결정"],
+    ["② 데이터 로드","pd.read_csv()"],
+    ["③ EDA","shape, info, describe, 결측치, 분포 확인"],
+    ["④ 전처리","결측치 처리, 인코딩, 스케일링"],
+    ["⑤ 데이터 분리","train_test_split()"],
+    ["⑥ 모델 학습","model.fit(X_train, y_train)"],
+    ["⑦ 평가","predict / predict_proba + 평가지표"],
+    ["⑧ 예측 & 제출","X_test 예측 → to_csv()"],
+  ],
+  code:`import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_auc_score
+
+# ① ~ ② 데이터 로드
+from sklearn.datasets import load_breast_cancer
+data = load_breast_cancer(as_frame=True)
+X, y = data.data, data.target
+
+# ③ EDA
+print(X.shape, y.value_counts())
+
+# ④ 전처리 (이 데이터는 결측치 없음)
+
+# ⑤ 분리
+X_tr, X_val, y_tr, y_val = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y)
+
+# ⑥ 학습
+model = RandomForestClassifier(random_state=42)
+model.fit(X_tr, y_tr)
+
+# ⑦ 평가
+prob = model.predict_proba(X_val)[:,1]
+print("ROC-AUC:", roc_auc_score(y_val, prob))
+
+# ⑧ 예측 파일 생성 (실제 시험)
+# result = pd.DataFrame({"pred": prob})
+# result.to_csv("result.csv", index=False)`,
+},
+
+// ── CHAPTER 02 머신러닝 실습(분류) ───────────────────────────────
+{
+  ch:"p2-ch02", chTitle:"CHAPTER 02 머신러닝 실습(분류)",
+  num:"SECTION 01", title:"문제 정의",
+  tags:["이진분류","다중분류","평가지표 결정","ROC-AUC","F1"],
+  desc:`분류 문제를 시작하기 전 문제 유형과 평가지표를 먼저 파악합니다.<br>
+<b>이진 분류</b>: target이 0/1 → 평가지표로 ROC-AUC 자주 사용<br>
+<b>다중 분류</b>: target이 3개 이상 클래스 → macro F1-score 자주 사용`,
+  table:[
+    ["이진 분류 대표 지표","ROC-AUC, Accuracy, F1, Precision, Recall"],
+    ["다중 분류 대표 지표","macro/micro/weighted F1-score, Accuracy"],
+    ["predict_proba()[:, 1]","이진 분류: 양성 클래스 확률"],
+    ["predict()","클래스 직접 예측 (0 또는 1)"],
+  ],
+  code:`# 문제 정의: 유방암 이진 분류
+from sklearn.datasets import load_breast_cancer
+data = load_breast_cancer(as_frame=True)
+
+print("target 고유값:", data.target.unique())   # [0, 1]
+print("클래스 분포:")
+print(data.target.value_counts())
+
+# → 이진 분류 → 평가지표: ROC-AUC`,
+},
+{
+  ch:"p2-ch02", chTitle:"CHAPTER 02 머신러닝 실습(분류)",
+  num:"SECTION 02", title:"라이브러리 및 데이터 불러오기",
+  tags:["read_csv","load_breast_cancer","shape","head","info"],
+  desc:`데이터를 불러오고 기본 구조를 파악합니다.`,
+  table:[
+    ["pd.read_csv()","CSV 파일 불러오기"],
+    ["df.shape","(행 수, 열 수)"],
+    ["df.head()","상위 5개 행"],
+    ["df.info()","컬럼 자료형 및 결측치"],
+    ["df.describe()","수치형 기술통계"],
+    ["df.columns","컬럼 목록"],
+  ],
+  code:`import pandas as pd
+from sklearn.datasets import load_breast_cancer
+
+data = load_breast_cancer(as_frame=True)
+X = data.data
+y = data.target
+
+print("X shape:", X.shape)       # (569, 30)
+print("y 분포:")
+print(y.value_counts())
+
+print(X.head())
+print(X.info())`,
+},
+{
+  ch:"p2-ch02", chTitle:"CHAPTER 02 머신러닝 실습(분류)",
+  num:"SECTION 03", title:"탐색적 데이터 분석(EDA)",
+  tags:["EDA","isnull","value_counts","describe","nunique","분포"],
+  desc:`데이터의 특성, 결측치, 분포를 파악합니다.`,
+  table:[
+    ["df.isnull().sum()","결측치 수 확인"],
+    ["df.describe()","평균, 표준편차, 사분위수"],
+    ["df[col].value_counts()","범주형 빈도"],
+    ["df.dtypes","자료형 확인"],
+    ["df.corr()","수치형 컬럼 간 상관계수"],
+  ],
+  code:`import pandas as pd
+from sklearn.datasets import load_breast_cancer
+
+data = load_breast_cancer(as_frame=True)
+X, y = data.data, data.target
+
+# 결측치
+print("결측치 합계:", X.isnull().sum().sum())
+
+# 기술통계
+print(X.describe())
+
+# 자료형
+print(X.dtypes.value_counts())
+
+# 상관관계 상위
+corr = X.corrwith(y).abs().sort_values(ascending=False)
+print("타겟과 상관관계 TOP5:")
+print(corr.head())`,
+},
+{
+  ch:"p2-ch02", chTitle:"CHAPTER 02 머신러닝 실습(분류)",
+  num:"SECTION 04", title:"데이터 전처리",
+  tags:["fillna","인코딩","get_dummies","LabelEncoder","StandardScaler","MinMaxScaler"],
+  desc:`결측치 처리, 범주형 인코딩, 수치형 스케일링을 수행합니다.<br>
+<b>핵심 규칙:</b> scaler/encoder는 train 데이터로만 fit 후 test에 transform!`,
+  table:[
+    ["df.fillna(mean)","결측치를 평균으로 채우기"],
+    ["pd.get_dummies()","원-핫 인코딩 (0/1)"],
+    ["LabelEncoder","범주형 → 정수 레이블"],
+    ["StandardScaler","평균 0, 표준편차 1 표준화"],
+    ["MinMaxScaler","0~1 범위로 정규화"],
+    ["fit_transform(train)","train으로만 fit"],
+    ["transform(test)","test는 transform만"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+
+# 예시 데이터
+df = pd.DataFrame({
+    "age": [25, None, 45, 30],
+    "income": [3000, 5000, None, 7000],
+    "gender": ["M","F","M","F"]
+})
+
+# 결측치 처리
+df["age"] = df["age"].fillna(df["age"].median())
+df["income"] = df["income"].fillna(df["income"].mean())
+
+# 범주형 인코딩
+df = pd.get_dummies(df, columns=["gender"])
+
+# 스케일링 (train/test 분리 후 적용)
+scaler = StandardScaler()
+df[["age","income"]] = scaler.fit_transform(df[["age","income"]])
+print(df)`,
+  warn:`<b>주의:</b> 스케일러는 반드시 X_train으로만 fit해야 합니다. X_test에는 transform()만 적용하세요. (데이터 누수 방지)`
+},
+{
+  ch:"p2-ch02", chTitle:"CHAPTER 02 머신러닝 실습(분류)",
+  num:"SECTION 05", title:"검증 데이터 나누기",
+  tags:["train_test_split","test_size","stratify","random_state"],
+  desc:`학습 데이터와 검증 데이터를 나눕니다. 분류에서는 <b>stratify=y</b>로 클래스 비율을 유지합니다.`,
+  table:[
+    ["train_test_split(X, y, test_size=0.2)","80% train, 20% val"],
+    ["stratify=y","클래스 비율 유지 (분류에서 권장)"],
+    ["random_state=42","재현 가능한 분할"],
+    ["X_train, X_val, y_train, y_val","반환 순서"],
+  ],
+  code:`from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_breast_cancer
+
+data = load_breast_cancer(as_frame=True)
+X, y = data.data, data.target
+
+X_train, X_val, y_train, y_val = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y   # 분류: 클래스 비율 유지
+)
+
+print("train:", X_train.shape, y_train.value_counts().to_dict())
+print("val  :", X_val.shape,   y_val.value_counts().to_dict())`,
+  tip:`<b>시험 팁:</b> 분류 문제에서는 stratify=y를 거의 항상 사용합니다. 데이터 불균형이 있을 때 특히 중요합니다.`
+},
+{
+  ch:"p2-ch02", chTitle:"CHAPTER 02 머신러닝 실습(분류)",
+  num:"SECTION 06", title:"머신러닝 학습 및 평가",
+  tags:["RandomForestClassifier","fit","predict","predict_proba","roc_auc_score"],
+  desc:`모델을 학습하고 검증 데이터로 성능을 평가합니다.`,
+  table:[
+    ["RandomForestClassifier","앙상블 기반 분류 (시험 기본)"],
+    ["model.fit(X_train, y_train)","학습"],
+    ["model.predict(X_val)","클래스 예측 (0 또는 1)"],
+    ["model.predict_proba(X_val)[:,1]","양성 확률 예측 (ROC-AUC용)"],
+    ["roc_auc_score(y_val, prob)","ROC-AUC 계산"],
+    ["accuracy_score(y_val, pred)","정확도"],
+    ["f1_score(y_val, pred)","F1 점수"],
+  ],
+  code:`from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_auc_score, accuracy_score
+
+data = load_breast_cancer(as_frame=True)
+X_tr, X_val, y_tr, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42, stratify=data.target)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_tr, y_tr)
+
+pred = model.predict(X_val)
+prob = model.predict_proba(X_val)[:, 1]
+
+print("Accuracy :", accuracy_score(y_val, pred))
+print("ROC-AUC  :", roc_auc_score(y_val, prob))`,
+},
+{
+  ch:"p2-ch02", chTitle:"CHAPTER 02 머신러닝 실습(분류)",
+  num:"SECTION 07", title:"예측 및 결과 파일 생성",
+  tags:["predict_proba","to_csv","결과 파일","submission"],
+  desc:`학습된 모델로 X_test를 예측하고 결과 파일을 저장합니다.`,
+  table:[
+    ["model.predict_proba(X_test)[:,1]","이진 분류 확률 예측"],
+    ["model.predict(X_test)","클래스 예측"],
+    ["pd.DataFrame({...})","결과 데이터프레임 생성"],
+    ["df.to_csv('result.csv', index=False)","파일 저장"],
+  ],
+  code:`import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+
+data = load_breast_cancer(as_frame=True)
+X_tr, X_test, y_tr, y_test = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_tr, y_tr)
+
+# 확률 예측 (ROC-AUC 제출)
+prob = model.predict_proba(X_test)[:, 1]
+
+# 결과 파일 저장
+result = pd.DataFrame({"target": prob})
+result.to_csv("result.csv", index=False)
+print(result.head())`,
+  tip:`<b>시험 팁:</b> 문제에서 확률값 제출인지 클래스값 제출인지 확인하세요. ROC-AUC → 확률, Accuracy → 클래스.`
+},
+
+// ── CHAPTER 03 머신러닝 평가지표 ──────────────────────────────────
+{
+  ch:"p2-ch03", chTitle:"CHAPTER 03 머신러닝 평가지표",
+  num:"SECTION 01", title:"이진 분류 평가지표",
+  tags:["Accuracy","Precision","Recall","F1","ROC-AUC","혼동행렬"],
+  desc:`이진 분류 모델의 성능을 측정하는 지표들입니다.`,
+  table:[
+    ["Accuracy","(TP+TN)/(전체). 정확도. 불균형 데이터에서 부적합"],
+    ["Precision","TP/(TP+FP). 양성 예측의 정확도"],
+    ["Recall","TP/(TP+FN). 실제 양성 중 맞춘 비율"],
+    ["F1-score","2×(P×R)/(P+R). Precision과 Recall의 조화평균"],
+    ["ROC-AUC","확률 예측 성능. 1에 가까울수록 좋음"],
+    ["혼동행렬(Confusion Matrix)","TP/FP/TN/FN 시각화"],
+    ["threshold=0.5","기본 임계값. 이 이상이면 양성 예측"],
+  ],
+  code:`from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import (accuracy_score, precision_score,
+    recall_score, f1_score, roc_auc_score, confusion_matrix)
+
+data = load_breast_cancer(as_frame=True)
+X_tr, X_val, y_tr, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42, stratify=data.target)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_tr, y_tr)
+pred = model.predict(X_val)
+prob = model.predict_proba(X_val)[:,1]
+
+print("Accuracy :", accuracy_score(y_val, pred))
+print("Precision:", precision_score(y_val, pred))
+print("Recall   :", recall_score(y_val, pred))
+print("F1       :", f1_score(y_val, pred))
+print("ROC-AUC  :", roc_auc_score(y_val, prob))
+print("Confusion Matrix:")
+print(confusion_matrix(y_val, pred))`,
+  tip:`<b>시험 팁:</b> ROC-AUC는 predict_proba()[:, 1] 확률값을 입력합니다. predict() 결과(0/1)를 넣으면 안 됩니다.`
+},
+{
+  ch:"p2-ch03", chTitle:"CHAPTER 03 머신러닝 평가지표",
+  num:"SECTION 02", title:"다중 분류 평가지표",
+  tags:["macro","micro","weighted","F1","average"],
+  desc:`클래스가 3개 이상인 다중 분류에서 F1-score를 계산할 때 average 파라미터를 지정합니다.`,
+  table:[
+    ["average='macro'","각 클래스 F1의 단순 평균. 클래스 불균형 무시"],
+    ["average='micro'","전체 TP/FP/FN으로 계산. 샘플 수 고려"],
+    ["average='weighted'","클래스 샘플 수로 가중 평균"],
+    ["average=None","각 클래스별 F1 반환"],
+    ["accuracy_score","다중 분류에서도 그대로 사용 가능"],
+  ],
+  code:`from sklearn.datasets import load_wine
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score, accuracy_score, classification_report
+
+data = load_wine(as_frame=True)
+X_tr, X_val, y_tr, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42, stratify=data.target)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_tr, y_tr)
+pred = model.predict(X_val)
+
+print("Accuracy    :", accuracy_score(y_val, pred))
+print("F1 macro    :", f1_score(y_val, pred, average='macro'))
+print("F1 micro    :", f1_score(y_val, pred, average='micro'))
+print("F1 weighted :", f1_score(y_val, pred, average='weighted'))
+print()
+print(classification_report(y_val, pred))`,
+  tip:`<b>시험 팁:</b> 문제에서 "macro F1-score"라고 명시하면 average='macro'를 사용합니다.`
+},
+{
+  ch:"p2-ch03", chTitle:"CHAPTER 03 머신러닝 평가지표",
+  num:"SECTION 03", title:"회귀 평가지표",
+  tags:["RMSE","MAE","MSE","R²","mean_squared_error"],
+  desc:`회귀 모델의 예측 오차를 측정하는 지표들입니다. 값이 작을수록 좋습니다 (R²는 1에 가까울수록).`,
+  table:[
+    ["MAE","평균 절대 오차. 이상치에 덜 민감"],
+    ["MSE","평균 제곱 오차. 큰 오차에 더 민감"],
+    ["RMSE","MSE의 제곱근. 원래 단위와 같음"],
+    ["R²(결정계수)","0~1. 1에 가까울수록 모델이 좋음"],
+    ["mean_squared_error(y, pred)","MSE 계산"],
+    ["np.sqrt(MSE)","RMSE 계산"],
+    ["mean_absolute_error(y, pred)","MAE 계산"],
+    ["r2_score(y, pred)","R² 계산"],
+  ],
+  code:`import numpy as np
+from sklearn.datasets import load_diabetes
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import (mean_squared_error,
+    mean_absolute_error, r2_score)
+
+data = load_diabetes(as_frame=True)
+X_tr, X_val, y_tr, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42)
+
+model = RandomForestRegressor(random_state=42)
+model.fit(X_tr, y_tr)
+pred = model.predict(X_val)
+
+mse  = mean_squared_error(y_val, pred)
+rmse = np.sqrt(mse)
+mae  = mean_absolute_error(y_val, pred)
+r2   = r2_score(y_val, pred)
+
+print(f"MSE  : {mse:.2f}")
+print(f"RMSE : {rmse:.2f}")
+print(f"MAE  : {mae:.2f}")
+print(f"R²   : {r2:.4f}")`,
+  tip:`<b>시험 팁:</b> sklearn 0.24+ 에서 squared=False 옵션으로 RMSE를 직접 구할 수 있습니다. 구버전은 np.sqrt(MSE)를 사용하세요.`
+},
+
+// ── CHAPTER 04 머신러닝 실습(회귀) ───────────────────────────────
+{
+  ch:"p2-ch04", chTitle:"CHAPTER 04 머신러닝 실습(회귀)",
+  num:"SECTION 01", title:"문제 정의",
+  tags:["회귀","RMSE","MAE","R²","연속형 target"],
+  desc:`회귀 문제는 <b>연속형 숫자</b>를 예측합니다. target이 실수값이고 nunique()가 많을 때 회귀로 정의합니다.<br>
+주로 사용하는 평가지표: <b>RMSE</b>`,
+  table:[
+    ["target 확인","y.dtype이 float 또는 nunique() 많음"],
+    ["RMSE","Root Mean Squared Error. 낮을수록 좋음"],
+    ["RandomForestRegressor","앙상블 기반 회귀 (시험 기본)"],
+    ["GradientBoostingRegressor","부스팅 기반 회귀"],
+    ["LinearRegression","선형 회귀 (기본 베이스라인)"],
+  ],
+  code:`from sklearn.datasets import load_diabetes
+data = load_diabetes(as_frame=True)
+y = data.target
+
+print("target 타입:", y.dtype)         # float64
+print("target 범위:", y.min(), "~", y.max())
+print("고유값 수:", y.nunique())        # 214 → 회귀
+print("평균:", y.mean().round(2))`,
+},
+{
+  ch:"p2-ch04", chTitle:"CHAPTER 04 머신러닝 실습(회귀)",
+  num:"SECTION 02", title:"라이브러리 및 데이터 불러오기",
+  tags:["read_csv","load_diabetes","head","info","shape"],
+  desc:`회귀 실습에서 데이터를 불러오고 구조를 확인합니다.`,
+  table:[
+    ["pd.read_csv()","파일 로드"],
+    ["df.shape","행/열 수"],
+    ["df.info()","자료형과 결측치"],
+    ["df.describe()","수치 통계"],
+  ],
+  code:`import pandas as pd
+from sklearn.datasets import load_diabetes
+
+data = load_diabetes(as_frame=True)
+X = data.data
+y = data.target
+
+print("X shape:", X.shape)   # (442, 10)
+print("결측치:", X.isnull().sum().sum())  # 0
+print(X.describe())`,
+},
+{
+  ch:"p2-ch04", chTitle:"CHAPTER 04 머신러닝 실습(회귀)",
+  num:"SECTION 03", title:"탐색적 데이터 분석(EDA)",
+  tags:["분포 확인","상관계수","describe","isnull"],
+  desc:`회귀 문제의 EDA는 target의 분포와 feature-target 상관관계를 중점 확인합니다.`,
+  table:[
+    ["y.hist()","target 분포 확인"],
+    ["X.corr()","feature 간 상관관계"],
+    ["X.corrwith(y)","feature와 target 상관관계"],
+    ["df.isnull().sum()","결측치 확인"],
+  ],
+  code:`import pandas as pd
+from sklearn.datasets import load_diabetes
+
+data = load_diabetes(as_frame=True)
+X, y = data.data, data.target
+
+# target 분포
+print("target 평균:", y.mean().round(2))
+print("target 표준편차:", y.std().round(2))
+
+# feature-target 상관관계
+corr = X.corrwith(y).abs().sort_values(ascending=False)
+print("상관관계 TOP5:")
+print(corr.head())`,
+},
+{
+  ch:"p2-ch04", chTitle:"CHAPTER 04 머신러닝 실습(회귀)",
+  num:"SECTION 04", title:"데이터 전처리",
+  tags:["결측치","인코딩","스케일링","get_dummies"],
+  desc:`회귀 전처리도 분류와 동일합니다. 결측치 처리 → 범주형 인코딩 → 스케일링.`,
+  table:[
+    ["fillna(median)","수치형 결측치 → 중앙값"],
+    ["get_dummies()","범주형 → 원-핫 인코딩"],
+    ["StandardScaler","수치형 표준화"],
+    ["train만 fit","데이터 누수 방지"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+
+# 실습용 데이터
+np.random.seed(42)
+n = 100
+df = pd.DataFrame({
+    "age":    np.random.randint(20,60,n).astype(float),
+    "income": np.random.randint(3000,9000,n).astype(float),
+    "type":   np.random.choice(["A","B","C"],n)
+})
+df.loc[[3,7,15], "age"] = None
+
+# 결측치 처리
+df["age"] = df["age"].fillna(df["age"].median())
+
+# 범주형 인코딩
+df = pd.get_dummies(df, columns=["type"])
+
+from sklearn.model_selection import train_test_split
+X = df.drop(columns=[])  # target 없는 예시
+print(df.head())`,
+},
+{
+  ch:"p2-ch04", chTitle:"CHAPTER 04 머신러닝 실습(회귀)",
+  num:"SECTION 05", title:"검증 데이터 나누기",
+  tags:["train_test_split","test_size","random_state"],
+  desc:`회귀에서는 stratify를 사용하지 않습니다.`,
+  table:[
+    ["train_test_split(X, y, test_size=0.2)","분리"],
+    ["stratify 미사용","회귀는 연속형이라 stratify 불필요"],
+    ["random_state=42","재현성"],
+  ],
+  code:`from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_diabetes
+
+data = load_diabetes(as_frame=True)
+X, y = data.data, data.target
+
+# 회귀: stratify 없음
+X_train, X_val, y_train, y_val = train_test_split(
+    X, y, test_size=0.2, random_state=42)
+
+print("train:", X_train.shape)
+print("val  :", X_val.shape)`,
+},
+{
+  ch:"p2-ch04", chTitle:"CHAPTER 04 머신러닝 실습(회귀)",
+  num:"SECTION 06", title:"머신러닝 학습 및 평가",
+  tags:["RandomForestRegressor","fit","predict","RMSE"],
+  desc:`회귀 모델을 학습하고 RMSE로 평가합니다.`,
+  table:[
+    ["RandomForestRegressor(random_state=42)","모델 생성"],
+    ["model.fit(X_train, y_train)","학습"],
+    ["model.predict(X_val)","예측"],
+    ["mean_squared_error + np.sqrt","RMSE 계산"],
+  ],
+  code:`import numpy as np
+from sklearn.datasets import load_diabetes
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+
+data = load_diabetes(as_frame=True)
+X_tr, X_val, y_tr, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42)
+
+model = RandomForestRegressor(random_state=42)
+model.fit(X_tr, y_tr)
+pred = model.predict(X_val)
+
+ans = np.sqrt(mean_squared_error(y_val, pred))
+print(f"RMSE: {ans:.4f}")`,
+},
+{
+  ch:"p2-ch04", chTitle:"CHAPTER 04 머신러닝 실습(회귀)",
+  num:"SECTION 07", title:"예측 및 결과 파일 생성",
+  tags:["predict","to_csv","결과파일"],
+  desc:`회귀는 확률이 아니라 <b>수치값</b>을 직접 예측하여 저장합니다.`,
+  table:[
+    ["model.predict(X_test)","수치 예측값 반환"],
+    ["pd.DataFrame({\"target\": pred})","결과 데이터프레임"],
+    ["to_csv(index=False)","파일 저장"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+from sklearn.datasets import load_diabetes
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+
+data = load_diabetes(as_frame=True)
+X_tr, X_test, y_tr, _ = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42)
+
+model = RandomForestRegressor(random_state=42)
+model.fit(X_tr, y_tr)
+pred = model.predict(X_test)
+
+result = pd.DataFrame({"target": pred})
+result.to_csv("result.csv", index=False)
+print(result.head())`,
+},
+
+// ── CHAPTER 05 머신러닝 실습(다중분류) ───────────────────────────
+{
+  ch:"p2-ch05", chTitle:"CHAPTER 05 머신러닝 실습(다중분류)",
+  num:"SECTION 01", title:"문제 정의",
+  tags:["다중분류","macro F1","3개 이상 클래스"],
+  desc:`target 클래스가 3개 이상인 분류 문제입니다. 평가지표로 <b>macro F1-score</b>를 주로 사용합니다.`,
+  table:[
+    ["target.nunique() ≥ 3","다중 분류"],
+    ["macro F1","각 클래스 동일 비중으로 평균"],
+    ["predict()","클래스 예측 (확률 아님)"],
+    ["RandomForestClassifier","다중 분류도 동일하게 사용"],
+  ],
+  code:`from sklearn.datasets import load_wine
+data = load_wine(as_frame=True)
+y = data.target
+
+print("클래스 수:", y.nunique())         # 3
+print("클래스 분포:")
+print(y.value_counts())`,
+},
+{
+  ch:"p2-ch05", chTitle:"CHAPTER 05 머신러닝 실습(다중분류)",
+  num:"SECTION 02", title:"라이브러리 및 데이터 불러오기",
+  tags:["load_wine","read_csv","shape","head"],
+  desc:`다중 분류 실습 데이터를 불러옵니다.`,
+  table:[
+    ["load_wine(as_frame=True)","와인 품종 다중분류 데이터"],
+    ["df.target_names","클래스 이름 확인"],
+  ],
+  code:`from sklearn.datasets import load_wine
+import pandas as pd
+
+data = load_wine(as_frame=True)
+X = data.data
+y = data.target
+
+print("클래스:", data.target_names)
+print("shape:", X.shape)
+print(y.value_counts())`,
+},
+{
+  ch:"p2-ch05", chTitle:"CHAPTER 05 머신러닝 실습(다중분류)",
+  num:"SECTION 03", title:"탐색적 데이터 분석(EDA)",
+  tags:["value_counts","describe","isnull","클래스 분포"],
+  desc:`다중 분류 EDA에서는 클래스 불균형 여부를 반드시 확인합니다.`,
+  table:[
+    ["y.value_counts()","클래스별 샘플 수"],
+    ["X.isnull().sum()","결측치 확인"],
+    ["X.describe()","수치 통계"],
+  ],
+  code:`from sklearn.datasets import load_wine
+
+data = load_wine(as_frame=True)
+X, y = data.data, data.target
+
+# 클래스 불균형 확인
+print("클래스 분포:")
+print(y.value_counts(normalize=True).round(3))
+
+# 결측치
+print("결측치:", X.isnull().sum().sum())`,
+},
+{
+  ch:"p2-ch05", chTitle:"CHAPTER 05 머신러닝 실습(다중분류)",
+  num:"SECTION 04", title:"데이터 전처리",
+  tags:["get_dummies","fillna","LabelEncoder"],
+  desc:`다중 분류 전처리는 이진 분류와 동일합니다.`,
+  table:[
+    ["fillna","결측치 처리"],
+    ["get_dummies()","범주형 인코딩"],
+    ["LabelEncoder","y값 인코딩 (이미 숫자면 불필요)"],
+  ],
+  code:`from sklearn.datasets import load_wine
+import pandas as pd
+
+data = load_wine(as_frame=True)
+X, y = data.data, data.target
+
+# wine 데이터는 이미 수치형, 결측치 없음
+print("결측치:", X.isnull().sum().sum())
+print("자료형:")
+print(X.dtypes.unique())`,
+},
+{
+  ch:"p2-ch05", chTitle:"CHAPTER 05 머신러닝 실습(다중분류)",
+  num:"SECTION 05", title:"검증 데이터 나누기",
+  tags:["train_test_split","stratify","다중분류"],
+  desc:`다중 분류에서도 stratify=y를 사용해 클래스 비율을 유지합니다.`,
+  table:[
+    ["stratify=y","다중 분류에서도 필수"],
+  ],
+  code:`from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_wine
+
+data = load_wine(as_frame=True)
+X, y = data.data, data.target
+
+X_tr, X_val, y_tr, y_val = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y)
+
+print("train 클래스 분포:", y_tr.value_counts().to_dict())
+print("val   클래스 분포:", y_val.value_counts().to_dict())`,
+},
+{
+  ch:"p2-ch05", chTitle:"CHAPTER 05 머신러닝 실습(다중분류)",
+  num:"SECTION 06", title:"머신러닝 학습 및 평가",
+  tags:["RandomForestClassifier","f1_score","macro","accuracy"],
+  desc:`다중 분류 모델 학습 및 macro F1-score 평가입니다.`,
+  table:[
+    ["model.predict()","클래스 예측 (0,1,2...)"],
+    ["f1_score(average='macro')","macro F1"],
+    ["accuracy_score","정확도"],
+  ],
+  code:`from sklearn.datasets import load_wine
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score, accuracy_score
+
+data = load_wine(as_frame=True)
+X_tr, X_val, y_tr, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42, stratify=data.target)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_tr, y_tr)
+pred = model.predict(X_val)
+
+ans = f1_score(y_val, pred, average="macro")
+print(f"macro F1: {ans:.4f}")
+print(f"Accuracy: {accuracy_score(y_val, pred):.4f}")`,
+},
+{
+  ch:"p2-ch05", chTitle:"CHAPTER 05 머신러닝 실습(다중분류)",
+  num:"SECTION 07", title:"예측 및 결과 파일 생성",
+  tags:["predict","to_csv","다중분류 결과"],
+  desc:`다중 분류는 클래스값(0,1,2...)을 직접 예측하여 저장합니다.`,
+  table:[
+    ["model.predict(X_test)","클래스 예측"],
+    ["to_csv(index=False)","저장"],
+  ],
+  code:`import pandas as pd
+from sklearn.datasets import load_wine
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+
+data = load_wine(as_frame=True)
+X_tr, X_test, y_tr, _ = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_tr, y_tr)
+pred = model.predict(X_test)
+
+result = pd.DataFrame({"target": pred})
+result.to_csv("result.csv", index=False)
+print(result["target"].value_counts())`,
+},
+
+// ══════════════════════════════════════════════════════════════════
+//  PART 3  작업형 3  통계
+// ══════════════════════════════════════════════════════════════════
+
+// ── CHAPTER 01 가설검정 ───────────────────────────────────────────
+{
+  ch:"p3-ch01", chTitle:"CHAPTER 01 가설검정",
+  num:"SECTION 01", title:"가설검정의 이해",
+  tags:["귀무가설","대립가설","p-value","유의수준","1종오류","2종오류"],
+  desc:`<b>가설검정</b>은 수집된 데이터로 가설의 참·거짓을 통계적으로 판단하는 방법입니다.`,
+  table:[
+    ["귀무가설 H₀","차이 없다 / 효과 없다 (기본 주장)"],
+    ["대립가설 H₁","차이 있다 / 효과 있다 (새로운 주장)"],
+    ["유의수준 α","0.05 (5%). p-value 판단 기준"],
+    ["p-value","귀무가설이 참일 때 현재 통계량 이상 극단값이 나올 확률"],
+    ["p-value < 0.05","귀무가설 기각 → 대립가설 채택 (통계적으로 유의)"],
+    ["p-value ≥ 0.05","귀무가설 채택 (유의하지 않음)"],
+    ["1종 오류(α)","H₀가 참인데 기각 (잘못된 발견)"],
+    ["2종 오류(β)","H₀가 거짓인데 채택 (놓친 발견)"],
+  ],
+  code:`# 가설검정 해석 예시
+p_value = 0.023
+
+alpha = 0.05
+
+if p_value < alpha:
+    print(f"p-value={p_value:.4f} < {alpha}")
+    print("→ 귀무가설 기각: 통계적으로 유의한 차이가 있다")
+else:
+    print(f"p-value={p_value:.4f} >= {alpha}")
+    print("→ 귀무가설 채택: 통계적으로 유의한 차이가 없다")`,
+  tip:`<b>시험 핵심:</b> p-value < 0.05 → 귀무가설 기각 / p-value ≥ 0.05 → 귀무가설 채택`
+},
+{
+  ch:"p3-ch01", chTitle:"CHAPTER 01 가설검정",
+  num:"SECTION 02", title:"단일 표본 검정",
+  tags:["ttest_1samp","단일표본 t검정","popmean","양측검정"],
+  desc:`<b>단일 표본 t검정</b>: 하나의 표본 집단의 평균이 특정 기준값(μ₀)과 통계적으로 다른지 검정합니다.`,
+  table:[
+    ["귀무가설 H₀","표본 평균 = μ₀ (차이 없음)"],
+    ["대립가설 H₁","표본 평균 ≠ μ₀ (차이 있음)"],
+    ["ttest_1samp(sample, popmean)","단일표본 t검정"],
+    ["stat","검정통계량 (t값)"],
+    ["p","p-value"],
+    ["popmean","비교할 기준값"],
+  ],
+  code:`import numpy as np
+from scipy.stats import ttest_1samp
+
+np.random.seed(42)
+# 기준값 70에서 점수가 다른지 검정
+score = np.random.normal(72, 8, 30)
+
+stat, p = ttest_1samp(score, popmean=70)
+print(f"t 통계량: {stat:.4f}")
+print(f"p-value : {p:.4f}")
+
+if p < 0.05:
+    print("→ 귀무가설 기각: 평균이 70과 유의하게 다르다")
+else:
+    print("→ 귀무가설 채택: 평균이 70과 유의하게 다르지 않다")
+
+ans = p
+print(f"ans = {ans:.6f}")`,
+},
+{
+  ch:"p3-ch01", chTitle:"CHAPTER 01 가설검정",
+  num:"SECTION 03", title:"대응 표본 검정",
+  tags:["ttest_rel","대응표본","전후비교","paired t-test"],
+  desc:`<b>대응 표본 t검정</b>: 같은 집단의 전·후 또는 짝지어진 두 측정값의 차이를 검정합니다.`,
+  table:[
+    ["귀무가설 H₀","전후 차이의 평균 = 0"],
+    ["대립가설 H₁","전후 차이의 평균 ≠ 0"],
+    ["ttest_rel(before, after)","대응표본 t검정"],
+    ["사용 조건","같은 개체의 두 측정값 (짝이 있는 데이터)"],
+  ],
+  code:`import numpy as np
+from scipy.stats import ttest_rel
+
+np.random.seed(42)
+# 학습 전후 점수 비교
+before = np.random.normal(65, 8, 30)
+after  = before + np.random.normal(3, 4, 30)
+
+stat, p = ttest_rel(before, after)
+print(f"t 통계량: {stat:.4f}")
+print(f"p-value : {p:.4f}")
+
+diff = after - before
+print(f"평균 변화량: {diff.mean():.2f}")
+
+if p < 0.05:
+    print("→ 학습 전후 유의한 차이 있음")
+
+ans = p`,
+},
+{
+  ch:"p3-ch01", chTitle:"CHAPTER 01 가설검정",
+  num:"SECTION 04", title:"독립 표본 검정",
+  tags:["ttest_ind","독립표본","two-sample","등분산","Welch"],
+  desc:`<b>독립 표본 t검정</b>: 서로 독립적인 두 집단의 평균 차이를 검정합니다.`,
+  table:[
+    ["귀무가설 H₀","두 집단의 평균 동일"],
+    ["대립가설 H₁","두 집단의 평균 다름"],
+    ["ttest_ind(a, b)","독립표본 t검정"],
+    ["equal_var=True","등분산 가정 (Student t-test)"],
+    ["equal_var=False","이분산 가정 (Welch t-test) - 기본 권장"],
+    ["levene()","등분산 검정 (등분산 여부 판단용)"],
+  ],
+  code:`import numpy as np
+from scipy.stats import ttest_ind, levene
+
+np.random.seed(42)
+a = np.random.normal(70, 8, 30)   # A반
+b = np.random.normal(74, 8, 35)   # B반
+
+# 등분산 검정
+stat_l, p_l = levene(a, b)
+print(f"등분산 p-value: {p_l:.4f}")
+equal = p_l >= 0.05
+
+# 독립표본 t검정
+stat, p = ttest_ind(a, b, equal_var=equal)
+print(f"t 통계량: {stat:.4f}")
+print(f"p-value : {p:.4f}")
+
+if p < 0.05:
+    print("→ 두 집단 평균에 유의한 차이 있음")
+
+ans = p`,
+  tip:`<b>시험 팁:</b> 등분산 여부가 언급 없으면 보통 equal_var=False(Welch)를 사용합니다.`
+},
+
+// ── CHAPTER 02 분산 분석 ──────────────────────────────────────────
+{
+  ch:"p3-ch02", chTitle:"CHAPTER 02 분산 분석",
+  num:"SECTION 01", title:"일원 분산 분석",
+  tags:["f_oneway","ANOVA","일원분산분석","F통계량","3집단 이상"],
+  desc:`<b>일원 분산 분석(One-Way ANOVA)</b>: 하나의 요인(독립변수)에 따른 3개 이상 집단의 평균 차이를 검정합니다.`,
+  table:[
+    ["귀무가설 H₀","모든 집단의 평균이 같다"],
+    ["대립가설 H₁","적어도 하나의 집단 평균이 다르다"],
+    ["f_oneway(g1, g2, g3, ...)","일원분산분석"],
+    ["F통계량","집단 간 분산 / 집단 내 분산"],
+    ["사후검정","차이 있으면 어느 집단인지 파악 (Tukey, Scheffe)"],
+  ],
+  code:`import numpy as np
+from scipy.stats import f_oneway
+
+np.random.seed(42)
+g1 = np.random.normal(70, 8, 30)
+g2 = np.random.normal(73, 8, 30)
+g3 = np.random.normal(78, 8, 30)
+
+stat, p = f_oneway(g1, g2, g3)
+print(f"F 통계량: {stat:.4f}")
+print(f"p-value : {p:.4f}")
+
+if p < 0.05:
+    print("→ 집단 간 유의한 평균 차이 있음")
+
+ans = p`,
+},
+{
+  ch:"p3-ch02", chTitle:"CHAPTER 02 분산 분석",
+  num:"SECTION 02", title:"이원 분산 분석",
+  tags:["이원분산분석","Two-Way ANOVA","ols","anova_lm","상호작용"],
+  desc:`<b>이원 분산 분석(Two-Way ANOVA)</b>: 두 요인의 주효과(Main Effect)와 상호작용(Interaction) 효과를 동시에 검정합니다.`,
+  table:[
+    ["주효과","각 요인이 종속변수에 미치는 독립 효과"],
+    ["상호작용 효과","두 요인이 결합해 종속변수에 미치는 효과"],
+    ["ols(formula, data).fit()","선형 모델 적합"],
+    ["anova_lm(model, typ=2)","이원분산분석표 계산"],
+    ["C(변수)","범주형 변수 처리"],
+    ["A:B","상호작용 항"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+from statsmodels.formula.api import ols
+from statsmodels.stats.anova import anova_lm
+
+np.random.seed(42)
+n = 60
+df = pd.DataFrame({
+    "score": np.random.normal(75, 10, n),
+    "method": np.random.choice(["A","B"], n),
+    "gender": np.random.choice(["M","F"], n)
+})
+df["score"] += np.where(df["method"]=="A", 5, 0)
+df["score"] += np.where(df["gender"]=="M", 3, 0)
+
+# 이원분산분석
+model = ols("score ~ C(method) + C(gender) + C(method):C(gender)", data=df).fit()
+anova_table = anova_lm(model, typ=2)
+print(anova_table)
+
+# method의 p-value
+ans = anova_table.loc["C(method)", "PR(>F)"]
+print(f"method p-value: {ans:.4f}")`,
+  tip:`<b>시험 팁:</b> anova_lm 결과표에서 각 요인의 PR(>F) 열이 p-value입니다.`
+},
+
+// ── CHAPTER 03 카이제곱 검정 ──────────────────────────────────────
+{
+  ch:"p3-ch03", chTitle:"CHAPTER 03 카이제곱 검정",
+  num:"SECTION 01", title:"적합도 검정",
+  tags:["chisquare","적합도검정","관측빈도","기대빈도"],
+  desc:`<b>카이제곱 적합도 검정</b>: 관측된 빈도가 기대하는 분포와 일치하는지 검정합니다.`,
+  table:[
+    ["귀무가설 H₀","관측빈도가 기대빈도와 같다"],
+    ["대립가설 H₁","관측빈도가 기대빈도와 다르다"],
+    ["chisquare(f_obs, f_exp)","적합도 검정"],
+    ["f_obs","관측 빈도"],
+    ["f_exp","기대 빈도 (None이면 균등 분포)"],
+  ],
+  code:`import numpy as np
+from scipy.stats import chisquare
+
+# 주사위가 공정한지 검정
+observed = np.array([18, 22, 17, 19, 15, 29])
+expected = np.array([20, 20, 20, 20, 20, 20])  # 균등분포 기대
+
+stat, p = chisquare(f_obs=observed, f_exp=expected)
+print(f"χ² 통계량: {stat:.4f}")
+print(f"p-value  : {p:.4f}")
+
+if p < 0.05:
+    print("→ 기대분포와 유의한 차이 있음 (주사위 불공정)")
+else:
+    print("→ 기대분포와 차이 없음 (주사위 공정)")
+
+ans = p`,
+},
+{
+  ch:"p3-ch03", chTitle:"CHAPTER 03 카이제곱 검정",
+  num:"SECTION 02", title:"독립성 검정",
+  tags:["chi2_contingency","독립성검정","교차표","contingency"],
+  desc:`<b>카이제곱 독립성 검정</b>: 두 범주형 변수 간에 연관성(관계)이 있는지 검정합니다.`,
+  table:[
+    ["귀무가설 H₀","두 변수는 독립(연관 없음)"],
+    ["대립가설 H₁","두 변수는 연관 있음"],
+    ["chi2_contingency(table)","독립성 검정"],
+    ["교차표(분할표)","행 × 열 빈도표"],
+    ["dof","자유도 = (행수-1)×(열수-1)"],
+    ["expected","기대 빈도 행렬"],
+  ],
+  code:`import pandas as pd
+from scipy.stats import chi2_contingency
+
+# 성별과 구매 여부 독립성 검정
+table = pd.DataFrame({
+    "구매":   [30, 20],
+    "미구매": [10, 25]
+}, index=["남성","여성"])
+
+print("교차표:")
+print(table)
+
+stat, p, dof, expected = chi2_contingency(table)
+print(f"\nχ² 통계량: {stat:.4f}")
+print(f"p-value  : {p:.4f}")
+print(f"자유도   : {dof}")
+
+if p < 0.05:
+    print("→ 성별과 구매여부는 연관 있음 (독립 아님)")
+
+ans = p`,
+},
+{
+  ch:"p3-ch03", chTitle:"CHAPTER 03 카이제곱 검정",
+  num:"SECTION 03", title:"동질성 검정",
+  tags:["chi2_contingency","동질성검정","집단간 분포"],
+  desc:`<b>카이제곱 동질성 검정</b>: 여러 집단에서 특정 범주형 변수의 분포가 동일한지 검정합니다.<br>
+독립성 검정과 계산 방법은 동일하지만, 목적이 다릅니다.<br>
+독립성 검정: 두 변수의 관계 / 동질성 검정: 집단 간 분포 비교`,
+  table:[
+    ["귀무가설 H₀","집단 간 분포가 동일하다"],
+    ["대립가설 H₁","집단 간 분포가 다르다"],
+    ["chi2_contingency(table)","동질성 검정 (코드 동일)"],
+    ["차이점","표본 추출 방식의 차이 (해석 관점)"],
+  ],
+  code:`import pandas as pd
+from scipy.stats import chi2_contingency
+
+# 세 지역의 선호 색상 분포 동질성 검정
+table = pd.DataFrame({
+    "빨강": [40, 35, 50],
+    "파랑": [30, 45, 20],
+    "초록": [30, 20, 30]
+}, index=["서울","부산","대구"])
+
+stat, p, dof, expected = chi2_contingency(table)
+print(f"χ² 통계량: {stat:.4f}")
+print(f"p-value  : {p:.4f}")
+print(f"자유도   : {dof}")
+
+if p < 0.05:
+    print("→ 지역 간 색상 선호 분포가 다름")
+else:
+    print("→ 지역 간 색상 선호 분포 동질함")
+
+ans = p`,
+},
+
+// ── CHAPTER 04 회귀 분석 ─────────────────────────────────────────
+{
+  ch:"p3-ch04", chTitle:"CHAPTER 04 회귀 분석",
+  num:"SECTION 01", title:"상관 계수",
+  tags:["pearsonr","spearmanr","상관계수","corr","corrwith"],
+  desc:`<b>상관 계수</b>는 두 변수 간 선형 관계의 강도와 방향을 -1 ~ 1로 나타냅니다.`,
+  table:[
+    ["pearsonr(x, y)","피어슨 상관계수 (선형 관계)"],
+    ["spearmanr(x, y)","스피어만 상관계수 (순위 기반, 비선형 포함)"],
+    ["r ≈ 1","강한 양의 상관관계"],
+    ["r ≈ -1","강한 음의 상관관계"],
+    ["r ≈ 0","상관관계 거의 없음"],
+    ["df.corr()","DataFrame 전체 상관행렬"],
+    ["df.corrwith(y)","각 열과 y의 상관계수"],
+  ],
+  code:`import numpy as np
+from scipy.stats import pearsonr, spearmanr
+
+np.random.seed(42)
+x = np.random.normal(0, 1, 50)
+y = 2*x + np.random.normal(0, 0.5, 50)
+
+# 피어슨 상관계수
+r_p, p_p = pearsonr(x, y)
+print(f"피어슨 r={r_p:.4f}, p={p_p:.4f}")
+
+# 스피어만 상관계수
+r_s, p_s = spearmanr(x, y)
+print(f"스피어만 r={r_s:.4f}, p={p_s:.4f}")
+
+# p-value 해석
+if p_p < 0.05:
+    print("→ 통계적으로 유의한 상관관계 있음")
+
+ans = r_p`,
+},
+{
+  ch:"p3-ch04", chTitle:"CHAPTER 04 회귀 분석",
+  num:"SECTION 02", title:"단순 선형 회귀 분석",
+  tags:["ols","단순회귀","intercept","coef","R²","p-value"],
+  desc:`<b>단순 선형 회귀</b>: 독립변수 1개로 종속변수를 예측하는 선형 모델 y = β₀ + β₁x`,
+  table:[
+    ["ols(\"y ~ x\", data=df).fit()","OLS 회귀 적합"],
+    ["model.summary()","회귀 결과 요약표"],
+    ["model.params","회귀계수 (intercept, 기울기)"],
+    ["model.pvalues","각 계수의 p-value"],
+    ["model.rsquared","결정계수 R²"],
+    ["model.rsquared_adj","수정 R²"],
+    ["model.fittedvalues","적합값(예측값)"],
+    ["model.resid","잔차"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+from statsmodels.formula.api import ols
+
+np.random.seed(42)
+df = pd.DataFrame({
+    "x": np.random.normal(0, 1, 100),
+})
+df["y"] = 3 + 2*df["x"] + np.random.normal(0, 1, 100)
+
+model = ols("y ~ x", data=df).fit()
+print(model.summary())
+
+print("\n회귀계수:", model.params)
+print("R²      :", model.rsquared.round(4))
+print("x p-value:", model.pvalues["x"].round(6))
+
+ans = model.pvalues["x"]`,
+},
+{
+  ch:"p3-ch04", chTitle:"CHAPTER 04 회귀 분석",
+  num:"SECTION 03", title:"다중 선형 회귀 분석",
+  tags:["ols","다중회귀","VIF","다중공선성","AIC","BIC"],
+  desc:`<b>다중 선형 회귀</b>: 독립변수 여러 개로 종속변수를 예측합니다. y = β₀ + β₁x₁ + β₂x₂ + ...`,
+  table:[
+    ["ols(\"y ~ x1 + x2\", data)","다중회귀 공식"],
+    ["model.params[\"x1\"]","x1의 회귀계수"],
+    ["model.pvalues[\"x1\"]","x1의 p-value"],
+    ["model.rsquared_adj","수정 R² (변수 수 조정)"],
+    ["model.aic / model.bic","모델 선택 기준 (낮을수록 좋음)"],
+    ["VIF > 10","다중공선성 의심"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+from statsmodels.formula.api import ols
+
+np.random.seed(42)
+df = pd.DataFrame({
+    "x1": np.random.normal(0, 1, 100),
+    "x2": np.random.normal(0, 1, 100)
+})
+df["y"] = 5 + 2*df["x1"] - 3*df["x2"] + np.random.normal(0, 1, 100)
+
+model = ols("y ~ x1 + x2", data=df).fit()
+print(model.summary())
+
+print("\n회귀계수:")
+print(model.params)
+print("\np-value:")
+print(model.pvalues)
+
+# x1의 p-value
+ans = model.pvalues["x1"]
+print(f"x1 p-value: {ans:.6f}")`,
+},
+{
+  ch:"p3-ch04", chTitle:"CHAPTER 04 회귀 분석",
+  num:"SECTION 04", title:"범주형 변수",
+  tags:["더미변수","get_dummies","C()","pd.get_dummies","drop_first"],
+  desc:`범주형 변수를 회귀분석에 사용하려면 <b>더미 변수(0/1)</b>로 변환해야 합니다. 기준 범주(reference)를 제외한 나머지를 변수로 사용합니다.`,
+  table:[
+    ["pd.get_dummies(df, drop_first=True)","더미변수 생성 (기준 범주 제거)"],
+    ["C(변수명)","statsmodels formula에서 범주형 처리"],
+    ["기준 범주","첫 번째 카테고리 (intercept에 흡수)"],
+    ["계수 해석","기준 범주 대비 변화량"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+from statsmodels.formula.api import ols
+
+np.random.seed(42)
+n = 120
+df = pd.DataFrame({
+    "x1": np.random.normal(0, 1, n),
+    "group": np.random.choice(["A","B","C"], n)
+})
+df["y"] = 3 + 2*df["x1"]
+df["y"] += np.where(df["group"]=="B", 3, np.where(df["group"]=="C", 6, 0))
+df["y"] += np.random.normal(0, 1, n)
+
+# C()로 범주형 처리 (statsmodels)
+model = ols("y ~ x1 + C(group)", data=df).fit()
+print(model.summary())
+print(model.pvalues)`,
+  tip:`<b>시험 팁:</b> statsmodels 공식에서 C(변수명)으로 감싸면 자동으로 더미 처리됩니다. B/C 계수는 A(기준) 대비 차이를 의미합니다.`
+},
+
+// ── CHAPTER 05 로지스틱 회귀 분석 ────────────────────────────────
+{
+  ch:"p3-ch05", chTitle:"CHAPTER 05 로지스틱 회귀 분석",
+  num:"SECTION 01", title:"로지스틱 회귀 분석",
+  tags:["Logit","로지스틱회귀","이진분류","시그모이드","statsmodels"],
+  desc:`<b>로지스틱 회귀</b>: target이 0/1인 이진 분류에 사용하는 통계 모델. 시그모이드 함수로 확률을 예측합니다.`,
+  table:[
+    ["sm.Logit(y, X).fit()","로지스틱 회귀 적합"],
+    ["sm.add_constant(X)","절편 추가 (반드시 필요)"],
+    ["model.params","로그 오즈비 (계수)"],
+    ["model.pvalues","각 변수의 유의성"],
+    ["model.summary()","전체 결과 요약"],
+    ["np.exp(params)","오즈비(Odds Ratio) 변환"],
+    ["model.predict(X)","확률 예측 (0~1)"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+
+np.random.seed(42)
+n = 200
+df = pd.DataFrame({
+    "age":    np.random.randint(20, 70, n),
+    "income": np.random.randint(2000, 10000, n)
+})
+logit_val = -6 + 0.06*df["age"] + 0.0004*df["income"]
+prob = 1 / (1 + np.exp(-logit_val))
+df["target"] = np.random.binomial(1, prob)
+
+X = sm.add_constant(df[["age","income"]])
+model = sm.Logit(df["target"], X).fit(disp=False)
+
+print(model.summary())
+print("\nage p-value:", model.pvalues["age"])
+
+ans = model.pvalues["age"]`,
+},
+{
+  ch:"p3-ch05", chTitle:"CHAPTER 05 로지스틱 회귀 분석",
+  num:"SECTION 02", title:"오즈와 오즈비",
+  tags:["오즈","오즈비","Odds","Odds Ratio","exp","계수 해석"],
+  desc:`<b>오즈(Odds)</b>: 사건이 일어날 확률 / 일어나지 않을 확률 = p/(1-p)<br>
+<b>오즈비(Odds Ratio)</b>: 로지스틱 회귀 계수의 exp 변환값. 독립변수 1 증가시 오즈의 변화 배율.`,
+  table:[
+    ["오즈 = p/(1-p)","확률 → 오즈 변환"],
+    ["로그오즈 = ln(오즈)","로지스틱 회귀 계수"],
+    ["오즈비 = exp(β)","계수의 지수 변환"],
+    ["OR > 1","독립변수 증가 → 사건 확률 증가"],
+    ["OR < 1","독립변수 증가 → 사건 확률 감소"],
+    ["OR = 1","독립변수가 사건에 영향 없음"],
+  ],
+  code:`import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+
+np.random.seed(42)
+n = 200
+df = pd.DataFrame({
+    "age": np.random.randint(20, 70, n),
+    "income": np.random.randint(2000, 10000, n)
+})
+logit_val = -6 + 0.06*df["age"] + 0.0004*df["income"]
+prob = 1 / (1 + np.exp(-logit_val))
+df["target"] = np.random.binomial(1, prob)
+
+X = sm.add_constant(df[["age","income"]])
+model = sm.Logit(df["target"], X).fit(disp=False)
+
+# 오즈비 계산
+odds_ratio = np.exp(model.params)
+print("오즈비:")
+print(odds_ratio.round(4))
+
+# age 오즈비 해석
+or_age = odds_ratio["age"]
+print(f"\nage 1 증가 시 오즈 {or_age:.4f}배 변화")`,
+},
+{
+  ch:"p3-ch05", chTitle:"CHAPTER 05 로지스틱 회귀 분석",
+  num:"SECTION 03", title:"범주형 변수의 오즈비",
+  tags:["C()","범주형 오즈비","더미변수","기준범주"],
+  desc:`로지스틱 회귀에서 범주형 변수를 사용할 때 기준 범주 대비 오즈비를 해석합니다.`,
+  table:[
+    ["C(변수)","statsmodels에서 범주형 처리"],
+    ["기준 범주","첫 번째 카테고리 (intercept에 흡수)"],
+    ["C(X)[T.B] 계수","B의 오즈비 = exp(계수)"],
+    ["OR 해석","기준 범주 대비 오즈 변화 배율"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+from statsmodels.formula.api import logit
+
+np.random.seed(42)
+n = 150
+df = pd.DataFrame({
+    "age":   np.random.randint(20, 60, n),
+    "group": np.random.choice(["A","B","C"], n)
+})
+logit_val = -3 + 0.04*df["age"]
+logit_val += np.where(df["group"]=="B", 0.5, np.where(df["group"]=="C", 1.2, 0))
+prob = 1/(1+np.exp(-logit_val))
+df["target"] = np.random.binomial(1, prob)
+
+model = logit("target ~ age + C(group)", data=df).fit(disp=False)
+print(model.summary())
+
+# 오즈비
+odds_ratio = np.exp(model.params)
+print("\n오즈비:")
+print(odds_ratio.round(4))`,
+},
+{
+  ch:"p3-ch05", chTitle:"CHAPTER 05 로지스틱 회귀 분석",
+  num:"SECTION 04", title:"로지스틱 회귀 모델의 예측",
+  tags:["predict","임계값","threshold","혼동행렬","분류 성능"],
+  desc:`로지스틱 회귀 모델로 확률을 예측하고 임계값(threshold)을 적용해 클래스를 분류합니다.`,
+  table:[
+    ["model.predict(X_new)","확률 예측 (0~1)"],
+    ["(prob >= 0.5).astype(int)","임계값 0.5로 클래스 분류"],
+    ["혼동행렬","예측 정확도 평가"],
+    ["임계값 조정","민감도(Recall)와 특이도 trade-off"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+from sklearn.metrics import accuracy_score, roc_auc_score
+
+np.random.seed(42)
+n = 200
+df = pd.DataFrame({
+    "age":    np.random.randint(20, 70, n),
+    "income": np.random.randint(2000, 10000, n)
+})
+logit_val = -6 + 0.06*df["age"] + 0.0004*df["income"]
+prob_true = 1/(1+np.exp(-logit_val))
+df["target"] = np.random.binomial(1, prob_true)
+
+X = sm.add_constant(df[["age","income"]])
+model = sm.Logit(df["target"], X).fit(disp=False)
+
+# 확률 예측
+prob_pred = model.predict(X)
+print("예측 확률 상위 5개:", prob_pred[:5].round(4).values)
+
+# 클래스 분류 (임계값 0.5)
+pred_class = (prob_pred >= 0.5).astype(int)
+
+print("Accuracy:", accuracy_score(df["target"], pred_class))
+print("ROC-AUC :", roc_auc_score(df["target"], prob_pred))
+
+ans = model.pvalues["age"]`,
+},
 ];
 
 function esc(s){
@@ -1378,8 +2791,9 @@ function render(){
   const container = document.getElementById("content");
   container.innerHTML = "";
 
+  const partMap = {"p1": ["ch01","ch02"], "p2": ["p2-ch01","p2-ch02","p2-ch03","p2-ch04","p2-ch05"], "p3": ["p3-ch01","p3-ch02","p3-ch03","p3-ch04","p3-ch05"]};
   const filtered = sections.filter(s => {
-    const matchCh = !ch || s.ch === ch;
+    const matchCh = !ch || (partMap[ch] ? partMap[ch].includes(s.ch) : s.ch === ch);
     const matchKw = !kw ||
       (s.num+s.title+s.tags.join(" ")+s.desc+(s.tip||"")+(s.warn||"")).toLowerCase().includes(kw);
     return matchCh && matchKw;

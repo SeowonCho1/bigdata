@@ -458,86 +458,300 @@ print(ans)`
 },
 
 {
-part:"작업형2", sec:"CH01-01", title:"지도학습, 비지도학습, 강화학습",
-q:"iris 데이터를 불러와 X, y로 나눈다. target이 있는 데이터이므로 지도학습인지 판별하는 문자열을 ans에 저장하시오.",
-a:`from sklearn.datasets import load_iris
-
-data = load_iris(as_frame=True)
-X = data.data
-y = data.target
-
-ans = "지도학습" if y is not None else "비지도학습"
-print(ans)`
-},
-{
-part:"작업형2", sec:"CH01-02", title:"분류와 회귀",
-q:"target의 고유 클래스 수가 2개 이상이고 이산형이면 분류, 연속형이면 회귀로 판단한다. iris target의 문제 유형을 ans에 저장하시오.",
-a:`from sklearn.datasets import load_iris
-
-data = load_iris(as_frame=True)
-y = data.target
-
-ans = "분류" if y.nunique() < 20 else "회귀"
-print(ans)`
-},
-{
-part:"작업형2", sec:"CH02-06", title:"분류 머신러닝 학습 및 평가",
-q:"RandomForestClassifier로 학습하고 검증 데이터 ROC-AUC를 ans에 저장하시오.",
-a:`from sklearn.datasets import load_breast_cancer
+part:"작업형2", sec:"CH06-01", title:"환자의 당뇨병 여부 예측",
+q:"Pima Indians 당뇨병 데이터를 이용해 당뇨병 여부(Outcome)를 예측하시오. RandomForestClassifier로 학습 후 검증 데이터의 ROC-AUC를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_auc_score
 
-data = load_breast_cancer(as_frame=True)
+np.random.seed(42)
+n = 768
+df = pd.DataFrame({
+    "Pregnancies":        np.random.randint(0,17,n),
+    "Glucose":            np.random.randint(44,199,n).astype(float),
+    "BloodPressure":      np.random.randint(24,122,n).astype(float),
+    "SkinThickness":      np.random.randint(0,99,n).astype(float),
+    "Insulin":            np.random.randint(0,846,n).astype(float),
+    "BMI":                np.random.uniform(18,67,n).round(1),
+    "DiabetesPedigree":   np.random.uniform(0.08,2.42,n).round(3),
+    "Age":                np.random.randint(21,81,n)
+})
+df.loc[[3,5,10,15,20], "Glucose"] = 0
+df["Glucose"] = df["Glucose"].replace(0, np.nan)
+df["Outcome"] = (df["Glucose"].fillna(120) > 120).astype(int)
+
+X = df.drop(columns=["Outcome"])
+y = df["Outcome"]
+X["Glucose"] = X["Glucose"].fillna(X["Glucose"].median())
+
 X_train, X_val, y_train, y_val = train_test_split(
-    data.data, data.target, test_size=0.2, random_state=42, stratify=data.target
-)
+    X, y, test_size=0.2, random_state=42, stratify=y)
 
 model = RandomForestClassifier(random_state=42)
 model.fit(X_train, y_train)
-pred = model.predict_proba(X_val)[:, 1]
+prob = model.predict_proba(X_val)[:,1]
 
-ans = roc_auc_score(y_val, pred)
-print(ans)`
+ans = roc_auc_score(y_val, prob)
+print(round(ans, 4))`
 },
 {
-part:"작업형2", sec:"CH03-03", title:"회귀 평가지표",
-q:"diabetes 데이터로 회귀 모델을 학습하고 RMSE를 ans에 저장하시오.",
-a:`from sklearn.datasets import load_diabetes
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
+part:"작업형2", sec:"CH06-02", title:"이직 여부 예측",
+q:"직원 데이터를 이용해 이직 여부(left)를 예측하시오. 범주형 컬럼은 인코딩하고, RandomForestClassifier로 학습 후 검증 ROC-AUC를 ans에 저장하시오.",
+a:`import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_auc_score
 
-data = load_diabetes(as_frame=True)
-X_train, X_val, y_train, y_val = train_test_split(data.data, data.target, test_size=0.2, random_state=42)
+np.random.seed(42)
+n = 500
+df = pd.DataFrame({
+    "satisfaction":    np.random.uniform(0.1,1.0,n).round(2),
+    "evaluation":      np.random.uniform(0.4,1.0,n).round(2),
+    "projects":        np.random.randint(2,8,n),
+    "hours":           np.random.randint(96,310,n),
+    "tenure":          np.random.randint(2,10,n),
+    "work_accident":   np.random.randint(0,2,n),
+    "promotion":       np.random.randint(0,2,n),
+    "dept":            np.random.choice(["sales","tech","hr","finance"],n),
+    "salary":          np.random.choice(["low","medium","high"],n)
+})
+df["left"] = ((df["satisfaction"] < 0.4) | (df["hours"] > 250)).astype(int)
 
-model = RandomForestRegressor(random_state=42)
+X = df.drop(columns=["left"])
+y = df["left"]
+X = pd.get_dummies(X, columns=["dept","salary"])
+
+X_train, X_val, y_train, y_val = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y)
+
+model = RandomForestClassifier(random_state=42)
 model.fit(X_train, y_train)
-pred = model.predict(X_val)
+prob = model.predict_proba(X_val)[:,1]
 
-ans = np.sqrt(mean_squared_error(y_val, pred))
-print(ans)`
+ans = roc_auc_score(y_val, prob)
+print(round(ans, 4))`
 },
 {
-part:"작업형2", sec:"CH05", title:"다중 분류 실습 전체",
-q:"wine 데이터를 이용해 다중 분류 모델을 학습하고 macro F1-score를 ans에 저장하시오.",
-a:`from sklearn.datasets import load_wine
+part:"작업형2", sec:"CH06-03", title:"신용카드 신청자의 미래 신용 예측",
+q:"신용카드 신청자 데이터에서 연체 여부(default)를 예측하시오. 결측치 처리 후 RandomForestClassifier로 학습하고 검증 ROC-AUC를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_auc_score
+
+np.random.seed(42)
+n = 600
+df = pd.DataFrame({
+    "age":       np.random.randint(18,70,n).astype(float),
+    "income":    np.random.randint(1000,10000,n).astype(float),
+    "debt":      np.random.uniform(0,50,n).round(2),
+    "credit_sc": np.random.randint(300,850,n).astype(float),
+    "employed":  np.random.randint(0,2,n),
+    "gender":    np.random.choice(["M","F"],n)
+})
+df.loc[[5,12,30], "income"] = np.nan
+df.loc[[8,20], "credit_sc"] = np.nan
+df["default"] = (df["credit_sc"].fillna(600) < 500).astype(int)
+
+X = df.drop(columns=["default"])
+y = df["default"]
+X["income"]    = X["income"].fillna(X["income"].median())
+X["credit_sc"] = X["credit_sc"].fillna(X["credit_sc"].median())
+X = pd.get_dummies(X, columns=["gender"])
+
+X_train, X_val, y_train, y_val = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+prob = model.predict_proba(X_val)[:,1]
+
+ans = roc_auc_score(y_val, prob)
+print(round(ans, 4))`
+},
+{
+part:"작업형2", sec:"CH07-01", title:"신용 등급 예측",
+q:"고객 신용 데이터를 이용해 신용 등급(grade: 0·1·2)을 예측하시오. RandomForestClassifier로 학습하고 검증 데이터의 macro F1-score를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score
 
-data = load_wine(as_frame=True)
+np.random.seed(42)
+n = 450
+df = pd.DataFrame({
+    "income":   np.random.randint(2000,12000,n),
+    "age":      np.random.randint(22,65,n),
+    "debt":     np.random.uniform(0,60,n).round(1),
+    "employed": np.random.randint(0,2,n)
+})
+df["grade"] = pd.cut(df["income"] - df["debt"]*100,
+                     bins=3, labels=[0,1,2]).astype(int)
+
+X = df.drop(columns=["grade"])
+y = df["grade"]
+
 X_train, X_val, y_train, y_val = train_test_split(
-    data.data, data.target, test_size=0.2, random_state=42, stratify=data.target
-)
+    X, y, test_size=0.2, random_state=42, stratify=y)
 
 model = RandomForestClassifier(random_state=42)
 model.fit(X_train, y_train)
 pred = model.predict(X_val)
 
 ans = f1_score(y_val, pred, average="macro")
-print(ans)`
+print(round(ans, 4))`
+},
+{
+part:"작업형2", sec:"CH07-02", title:"약물 종류 예측",
+q:"환자 데이터를 이용해 처방 약물 종류(drug: 0·1·2·3·4)를 예측하시오. 범주형 컬럼을 인코딩하고 RandomForestClassifier로 학습 후 macro F1-score를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
+
+np.random.seed(42)
+n = 400
+df = pd.DataFrame({
+    "age":       np.random.randint(15,75,n),
+    "sex":       np.random.choice(["M","F"],n),
+    "bp":        np.random.choice(["LOW","NORMAL","HIGH"],n),
+    "cholesterol": np.random.choice(["NORMAL","HIGH"],n),
+    "na_k":      np.random.uniform(6,40,n).round(2)
+})
+score = df["age"]/10 + df["na_k"]/5
+score += np.where(df["bp"]=="HIGH", 3, np.where(df["bp"]=="LOW", 1, 2))
+df["drug"] = pd.cut(score, bins=5, labels=[0,1,2,3,4]).astype(int)
+
+X = df.drop(columns=["drug"])
+y = df["drug"]
+X = pd.get_dummies(X, columns=["sex","bp","cholesterol"])
+
+X_train, X_val, y_train, y_val = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict(X_val)
+
+ans = f1_score(y_val, pred, average="macro")
+print(round(ans, 4))`
+},
+{
+part:"작업형2", sec:"CH07-03", title:"유리 종류 예측",
+q:"유리의 화학 성분 데이터로 유리 종류(type: 1~7)를 예측하시오. RandomForestClassifier로 학습 후 macro F1-score를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
+
+np.random.seed(42)
+n = 214
+df = pd.DataFrame({
+    "RI": np.random.uniform(1.51,1.54,n).round(5),
+    "Na": np.random.uniform(10,17,n).round(2),
+    "Mg": np.random.uniform(0,4.5,n).round(2),
+    "Al": np.random.uniform(0.3,3.5,n).round(2),
+    "Si": np.random.uniform(69,75,n).round(2),
+    "K":  np.random.uniform(0,6.2,n).round(2),
+    "Ca": np.random.uniform(5,16.2,n).round(2),
+    "Ba": np.random.uniform(0,3.2,n).round(2),
+    "Fe": np.random.uniform(0,0.51,n).round(2)
+})
+df["type"] = np.random.choice([1,2,3,5,6,7], n)
+
+X = df.drop(columns=["type"])
+y = df["type"]
+
+X_train, X_val, y_train, y_val = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict(X_val)
+
+ans = f1_score(y_val, pred, average="macro")
+print(round(ans, 4))`
+},
+{
+part:"작업형2", sec:"CH08-01", title:"항공권 가격 예측",
+q:"항공권 특성(출발시간, 도착시간, 경유 횟수, 항공사 등)을 이용해 항공권 가격을 예측하시오. RandomForestRegressor로 학습 후 RMSE를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+
+np.random.seed(42)
+n = 500
+df = pd.DataFrame({
+    "airline":    np.random.choice(["Air1","Air2","Air3"],n),
+    "stops":      np.random.choice([0,1,2],n),
+    "dep_hour":   np.random.randint(0,24,n),
+    "arr_hour":   np.random.randint(0,24,n),
+    "duration":   np.random.uniform(1,24,n).round(1),
+    "days_left":  np.random.randint(1,50,n)
+})
+df["price"] = (10000
+    + df["duration"]*500
+    + df["stops"]*3000
+    - df["days_left"]*100
+    + np.random.normal(0, 2000, n))
+
+X = df.drop(columns=["price"])
+y = df["price"]
+X = pd.get_dummies(X, columns=["airline"])
+
+X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+model = RandomForestRegressor(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict(X_val)
+
+ans = np.sqrt(mean_squared_error(y_val, pred))
+print(round(ans, 2))`
+},
+{
+part:"작업형2", sec:"CH08-02", title:"노트북 가격 예측",
+q:"노트북 사양(RAM, CPU, 용량, 화면 크기 등)을 이용해 가격을 예측하시오. 범주형 인코딩 후 RandomForestRegressor로 학습하고 RMSE를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+
+np.random.seed(42)
+n = 400
+df = pd.DataFrame({
+    "brand":   np.random.choice(["A","B","C","D"],n),
+    "ram_gb":  np.random.choice([8,16,32],n),
+    "ssd_gb":  np.random.choice([256,512,1024],n),
+    "screen":  np.random.choice([13,14,15,17],n),
+    "cpu_gen":  np.random.randint(10,14,n)
+})
+df["price"] = (500000
+    + df["ram_gb"]*30000
+    + df["ssd_gb"]*500
+    + df["screen"]*20000
+    + df["cpu_gen"]*50000
+    + np.random.normal(0, 100000, n))
+
+X = df.drop(columns=["price"])
+y = df["price"]
+X = pd.get_dummies(X, columns=["brand"])
+
+X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+model = RandomForestRegressor(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict(X_val)
+
+ans = np.sqrt(mean_squared_error(y_val, pred))
+print(round(ans, 2))`
 },
 {
 part:"작업형2", sec:"CH08-03", title:"중고차 가격 예측",
@@ -562,12 +776,12 @@ model = RandomForestRegressor(random_state=42)
 model.fit(X_train, y_train)
 pred = model.predict(X_val)
 
-ans = mean_squared_error(y_val, pred, squared=False)
-print(ans)`
+ans = np.sqrt(mean_squared_error(y_val, pred))
+print(round(ans, 2))`
 },
 
 {
-part:"작업형3", sec:"CH01-02", title:"단일 표본 검정",
+part:"작업형3", sec:"CH06-01", title:"단일 표본 검정",
 q:"표본 평균이 기준값 70과 다른지 단일표본 t검정을 수행하고 p-value를 ans에 저장하시오.",
 a:`import numpy as np
 from scipy.stats import ttest_1samp
@@ -580,7 +794,7 @@ ans = p
 print(ans)`
 },
 {
-part:"작업형3", sec:"CH01-03", title:"대응 표본 검정",
+part:"작업형3", sec:"CH06-03", title:"대응 표본 검정",
 q:"학습 전후 점수 차이가 있는지 대응표본 t검정을 수행하고 p-value를 ans에 저장하시오.",
 a:`import numpy as np
 from scipy.stats import ttest_rel
@@ -594,7 +808,7 @@ ans = p
 print(ans)`
 },
 {
-part:"작업형3", sec:"CH01-04", title:"독립 표본 검정",
+part:"작업형3", sec:"CH06-02", title:"독립 표본 검정",
 q:"A반과 B반 평균 점수 차이가 있는지 독립표본 t검정을 수행하고 p-value를 ans에 저장하시오.",
 a:`import numpy as np
 from scipy.stats import ttest_ind
@@ -608,7 +822,53 @@ ans = p
 print(ans)`
 },
 {
-part:"작업형3", sec:"CH02-01", title:"일원 분산 분석",
+part:"작업형3", sec:"CH06-05", title:"이원 분산 분석",
+q:"교수법(method: A/B)과 성별(gender: M/F)이 점수에 영향을 주는지 이원분산분석을 수행하시오. method 요인의 p-value를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+from statsmodels.formula.api import ols
+from statsmodels.stats.anova import anova_lm
+
+np.random.seed(42)
+n = 80
+df = pd.DataFrame({
+    "score":  np.random.normal(75, 10, n),
+    "method": np.random.choice(["A","B"], n),
+    "gender": np.random.choice(["M","F"], n)
+})
+df["score"] += np.where(df["method"]=="A", 5, 0)
+df["score"] += np.where(df["gender"]=="M", 2, 0)
+
+model = ols("score ~ C(method) + C(gender) + C(method):C(gender)", data=df).fit()
+anova_table = anova_lm(model, typ=2)
+print(anova_table)
+
+ans = anova_table.loc["C(method)", "PR(>F)"]
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH06-06", title:"카이제곱 적합도 검정",
+q:"주사위를 120번 던졌을 때 각 면의 관측 빈도가 균등 분포(각 20번)와 다른지 적합도 검정을 수행하고 p-value를 ans에 저장하시오.",
+a:`import numpy as np
+from scipy.stats import chisquare
+
+observed = np.array([18, 22, 17, 25, 15, 23])
+expected = np.array([20, 20, 20, 20, 20, 20])
+
+stat, p = chisquare(f_obs=observed, f_exp=expected)
+print(f"χ² 통계량: {stat:.4f}")
+print(f"p-value  : {p:.4f}")
+
+if p < 0.05:
+    print("→ 균등 분포와 유의한 차이 있음")
+else:
+    print("→ 균등 분포와 차이 없음")
+
+ans = p
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH06-04", title:"일원 분산 분석",
 q:"세 그룹 평균 차이가 있는지 일원분산분석을 수행하고 p-value를 ans에 저장하시오.",
 a:`import numpy as np
 from scipy.stats import f_oneway
@@ -623,7 +883,7 @@ ans = p
 print(ans)`
 },
 {
-part:"작업형3", sec:"CH03-02", title:"카이제곱 독립성 검정",
+part:"작업형3", sec:"CH06-07", title:"카이제곱 독립성 검정",
 q:"성별과 구매여부가 독립인지 카이제곱 독립성 검정을 수행하고 p-value를 ans에 저장하시오.",
 a:`import pandas as pd
 from scipy.stats import chi2_contingency
@@ -638,7 +898,7 @@ ans = p
 print(ans)`
 },
 {
-part:"작업형3", sec:"CH04-03", title:"다중 선형 회귀 분석",
+part:"작업형3", sec:"CH06-08", title:"다중 선형 회귀 분석",
 q:"y를 x1, x2로 설명하는 다중회귀를 적합하고 x1의 p-value를 ans에 저장하시오.",
 a:`import pandas as pd
 import numpy as np
@@ -656,7 +916,7 @@ ans = model.pvalues["x1"]
 print(ans)`
 },
 {
-part:"작업형3", sec:"CH05-01", title:"로지스틱 회귀 분석",
+part:"작업형3", sec:"CH06-09", title:"로지스틱 회귀 분석",
 q:"age와 income으로 binary target을 예측하는 로지스틱 회귀를 적합하고 age의 p-value를 ans에 저장하시오.",
 a:`import pandas as pd
 import numpy as np
