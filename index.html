@@ -1,0 +1,845 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>빅데이터분석기사 실기 Python 섹션별 확인문제</title>
+<style>
+  body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f6f7fb;color:#1f2937;margin:0}
+  header{background:#111827;color:white;padding:28px 20px}
+  header h1{margin:0;font-size:26px}
+  header p{margin:8px 0 0;color:#d1d5db}
+  .wrap{max-width:1100px;margin:0 auto;padding:22px}
+  .toolbar{position:sticky;top:0;background:#f6f7fb;padding:12px 0;z-index:10;display:flex;gap:8px;flex-wrap:wrap}
+  input,select,button{font-size:15px;padding:10px;border:1px solid #d1d5db;border-radius:10px}
+  input{width:42%;min-width:240px}
+  button{background:#111827;color:white;cursor:pointer}
+  .card{background:white;border:1px solid #e5e7eb;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 3px 10px rgba(0,0,0,.04)}
+  .meta{font-size:13px;color:#6b7280;margin-bottom:8px}
+  .tag{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:999px;padding:3px 9px;margin-right:6px}
+  h2{font-size:19px;margin:6px 0 10px}
+  pre{background:#0f172a;color:#e5e7eb;padding:14px;border-radius:12px;overflow:auto}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+  details.answer{margin-top:12px;border-top:1px dashed #e5e7eb;padding-top:12px}
+  details.answer summary{cursor:pointer;font-weight:700;color:#b45309}
+  .q{line-height:1.65}
+  .notice{background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:14px;margin:14px 0}
+  details.theory{
+    margin-top:12px;
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:12px;
+    padding:12px;
+  }
+  details.theory summary{
+    cursor:pointer;
+    font-weight:700;
+    color:#2563eb;
+  }
+  .theory-text{
+    margin-top:10px;
+    line-height:1.7;
+    font-size:14px;
+    color:#334155;
+    white-space:normal;
+  }
+  .theory-text b{color:#111827}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>빅데이터분석기사 실기 Python 섹션별 확인문제</h1>
+    <p>작업형 1 · 작업형 2 · 작업형 3 / 정답과 이론 설명은 기본 접힘 상태</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="notice">
+    문제는 실기 연습용입니다. 답은 Python 코드 기준이며, 각 문항은 가능한 한 <b>ans</b> 변수에 최종 답을 저장하도록 구성했습니다.
+  </div>
+
+  <details>
+    <summary><b>작업형 1 공통 데이터 생성 코드 펼치기</b></summary>
+<pre><code>import pandas as pd
+import numpy as np
+
+np.random.seed(2026)
+n = 60
+
+start = pd.date_range("2024-01-01 08:00", periods=n, freq="3H")
+end = start + pd.to_timedelta(np.random.randint(10, 180, n), unit="m")
+measure = np.random.randint(10, 50, n).astype(float)
+measure[[4, 19, 33]] = [10.5, 21.2, 30.7]
+
+df = pd.DataFrame({
+    "id": [f"C{1000+i}" for i in range(n)],
+    "name": np.random.choice(["Kim","Lee","Park","Choi","Jung"], n),
+    "city": np.random.choice(["Seoul","Busan","Daegu","Incheon"], n),
+    "category": np.random.choice(["A","B","C"], n),
+    "group": np.random.choice(["G1","G2","G3"], n),
+    "score": np.random.normal(70, 12, n).round(1),
+    "amount": np.random.randint(100, 1000, n),
+    "qty": np.random.randint(1, 10, n),
+    "price": np.random.randint(1000, 10000, n),
+    "date": pd.date_range("2024-01-01", periods=n, freq="7D"),
+    "start_time": start,
+    "end_time": end,
+    "distance_km": np.random.uniform(1, 120, n).round(2),
+    "text": np.random.choice(["AB-001","CD-203","EF-101","GH-404"], n),
+    "val1": np.random.randint(1, 100, n),
+    "val2": np.random.randint(1, 100, n),
+    "val3": np.random.randint(1, 100, n),
+    "num_str": np.random.choice(["10","20","30","bad","40"], n),
+    "measure": measure
+})
+
+df.loc[[3,10,25], "score"] = np.nan
+df.loc[[5,12], "city"] = np.nan
+df.loc[[8,22], "category"] = np.nan
+df.loc[7, "amount"] = 5000
+df = pd.concat([df, df.iloc[[0,1]]], ignore_index=True)
+
+df_a = df.iloc[:20].copy()
+df_b = df.iloc[20:40].copy()
+left = df[["id","city","amount"]].head(15).copy()
+right = pd.DataFrame({
+    "id": df["id"].head(15),
+    "grade": np.random.choice(["Gold","Silver","Bronze"], 15)
+})
+</code></pre>
+  </details>
+
+  <div class="toolbar">
+    <input id="search" placeholder="검색: 예) IQR, 회귀, 카이제곱, merge" />
+    <select id="part">
+      <option value="">전체</option>
+      <option value="작업형1">작업형1</option>
+      <option value="작업형2">작업형2</option>
+      <option value="작업형3">작업형3</option>
+    </select>
+    <button onclick="closeAll()">정답 모두 접기</button>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<script>
+const problems = [
+{
+part:"작업형1", sec:"SECTION 01", title:"필터링, 최솟값, 중앙값",
+q:"category가 A이고 amount가 500 이상인 행만 필터링하시오. 이 데이터에서 amount의 최솟값과 score의 중앙값을 더한 값을 ans에 저장하시오.",
+a:`cond = (df["category"] == "A") & (df["amount"] >= 500)
+tmp = df.loc[cond]
+ans = tmp["amount"].min() + tmp["score"].median()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 02", title:"카테고리, 인덱스, 문자열 슬라이싱",
+q:"category를 인덱스로 설정한 뒤 A 인덱스 행만 선택하시오. 선택된 데이터에서 id의 앞 2글자가 C1인 행의 개수를 ans에 저장하시오.",
+a:`tmp = df.set_index("category")
+a_df = tmp.loc["A"]
+ans = a_df["id"].str[:2].eq("C1").sum()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 03", title:"파생변수, 정렬, 인덱싱",
+q:"total = price * qty 파생변수를 만들고 total 기준 내림차순 정렬하시오. 정렬 후 5번째 행의 id를 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["total"] = tmp["price"] * tmp["qty"]
+tmp = tmp.sort_values("total", ascending=False)
+ans = tmp.iloc[4]["id"]
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 04", title:"값 변경, 정렬, 합계",
+q:"city 결측치를 Unknown으로 변경하시오. amount 오름차순 정렬 후 상위 10개 행의 qty 합계를 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["city"] = tmp["city"].fillna("Unknown")
+tmp = tmp.sort_values("amount")
+ans = tmp.head(10)["qty"].sum()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 05", title:"문자열 슬라이싱, 파생변수, 평균값",
+q:"text 컬럼의 앞 2글자를 code 파생변수로 만들고, code별 score 평균 중 가장 큰 값을 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["code"] = tmp["text"].str[:2]
+ans = tmp.groupby("code")["score"].mean().max()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 06", title:"필터링, 분산",
+q:"amount가 300 이상이고 score가 결측치가 아닌 데이터만 선택하시오. score의 표본분산을 ans에 저장하시오.",
+a:`tmp = df[(df["amount"] >= 300) & (df["score"].notna())]
+ans = tmp["score"].var()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 07", title:"값 변경, 필터링, 절댓값",
+q:"amount를 10% 증가시킨 adj_amount를 만들고, score와 70의 차이의 절댓값이 15 이상인 행의 adj_amount 평균을 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["adj_amount"] = tmp["amount"] * 1.1
+tmp["gap"] = (tmp["score"] - 70).abs()
+ans = tmp.loc[tmp["gap"] >= 15, "adj_amount"].mean()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 08", title:"시계열 데이터, 필터링, 데이터 개수",
+q:"date를 datetime으로 변환한 뒤 2024년 6월 1일 이후 데이터의 개수를 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["date"] = pd.to_datetime(tmp["date"])
+ans = (tmp["date"] >= "2024-06-01").sum()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 09", title:"필터링, 카테고리, 최빈값",
+q:"city가 Seoul 또는 Busan인 행만 선택하시오. 이 데이터에서 category의 최빈값을 ans에 저장하시오.",
+a:`tmp = df[df["city"].isin(["Seoul", "Busan"])]
+ans = tmp["category"].mode()[0]
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 10", title:"그룹핑, 최댓값, 정렬",
+q:"category별 amount 최댓값을 구하고 내림차순 정렬하시오. 최댓값이 가장 큰 category를 ans에 저장하시오.",
+a:`s = df.groupby("category")["amount"].max().sort_values(ascending=False)
+ans = s.index[0]
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 11", title:"슬라이싱, 사분위수, 결측치 제거",
+q:"처음 30개 행을 선택하고 score 결측치를 제거하시오. score의 제3사분위수에서 제1사분위수를 뺀 IQR을 ans에 저장하시오.",
+a:`tmp = df.iloc[:30].dropna(subset=["score"])
+q1 = tmp["score"].quantile(0.25)
+q3 = tmp["score"].quantile(0.75)
+ans = q3 - q1
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 12", title:"결측치 처리, 최빈값, 데이터 개수",
+q:"category 결측치를 category의 최빈값으로 대체하시오. 대체 후 category가 A인 행의 개수를 ans에 저장하시오.",
+a:`tmp = df.copy()
+mode_val = tmp["category"].mode()[0]
+tmp["category"] = tmp["category"].fillna(mode_val)
+ans = (tmp["category"] == "A").sum()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 13", title:"결측 데이터 찾기, 필터링, 평균값",
+q:"score가 결측치인 행의 city 값을 확인하시오. 해당 city들에 속한 전체 행의 amount 평균을 ans에 저장하시오.",
+a:`cities = df.loc[df["score"].isna(), "city"].dropna().unique()
+tmp = df[df["city"].isin(cities)]
+ans = tmp["amount"].mean()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 14", title:"중복 데이터 제거, 값 변경, 데이터 개수",
+q:"id 기준 중복을 제거하고 city 값을 대문자로 변경하시오. 변경 후 city의 고유값 개수를 ans에 저장하시오.",
+a:`tmp = df.drop_duplicates("id").copy()
+tmp["city"] = tmp["city"].str.upper()
+ans = tmp["city"].nunique()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 15", title:"컬럼 삭제, 행 단위 합계, 필터링",
+q:"text 컬럼을 삭제한 뒤 val1, val2, val3의 행 단위 합계 row_sum을 만드시오. row_sum이 180 이상인 행의 개수를 ans에 저장하시오.",
+a:`tmp = df.drop(columns=["text"]).copy()
+tmp["row_sum"] = tmp[["val1","val2","val3"]].sum(axis=1)
+ans = (tmp["row_sum"] >= 180).sum()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 16", title:"이상치, IQR",
+q:"amount 컬럼에서 IQR 기준 이상치 개수를 ans에 저장하시오.",
+a:`q1 = df["amount"].quantile(0.25)
+q3 = df["amount"].quantile(0.75)
+iqr = q3 - q1
+lower = q1 - 1.5 * iqr
+upper = q3 + 1.5 * iqr
+ans = ((df["amount"] < lower) | (df["amount"] > upper)).sum()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 17", title:"이상치, 소수점 있는 데이터 찾기, 표준편차",
+q:"measure 컬럼에서 소수점 이하 값이 있는 행만 선택하시오. 해당 행들의 amount 표준편차를 ans에 저장하시오.",
+a:`tmp = df[df["measure"] % 1 != 0]
+ans = tmp["amount"].std()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 18", title:"데이터 행 기준 평균값, 인덱싱",
+q:"val1, val2, val3의 행 평균 row_mean을 만들고, row_mean이 가장 큰 행의 id를 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["row_mean"] = tmp[["val1","val2","val3"]].mean(axis=1)
+ans = tmp.loc[tmp["row_mean"].idxmax(), "id"]
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 19", title:"결측치 뒤의 값으로 대체, 그룹합",
+q:"city 결측치를 뒤의 값으로 대체하시오. city별 amount 합계가 가장 큰 city를 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["city"] = tmp["city"].bfill()
+s = tmp.groupby("city")["amount"].sum()
+ans = s.idxmax()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 20", title:"시계열 데이터, 월별 집계, 인덱스",
+q:"date에서 월 정보를 추출해 month를 만들고, month별 amount 합계가 가장 큰 월을 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["date"] = pd.to_datetime(tmp["date"])
+tmp["month"] = tmp["date"].dt.month
+ans = tmp.groupby("month")["amount"].sum().idxmax()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 21", title:"시간 간 차이 계산, 필터링",
+q:"end_time과 start_time의 차이를 분 단위 duration_min으로 계산하시오. duration_min이 90분 이상인 행의 개수를 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["duration_min"] = (tmp["end_time"] - tmp["start_time"]).dt.total_seconds() / 60
+ans = (tmp["duration_min"] >= 90).sum()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 22", title:"시간 간 차이 계산, 그룹핑",
+q:"duration_min을 계산한 뒤 city별 평균 duration_min이 가장 큰 city를 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["duration_min"] = (tmp["end_time"] - tmp["start_time"]).dt.total_seconds() / 60
+ans = tmp.groupby("city")["duration_min"].mean().idxmax()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 23", title:"시간 간 차이 계산, 비율",
+q:"duration_min이 60분 미만인 행의 비율을 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["duration_min"] = (tmp["end_time"] - tmp["start_time"]).dt.total_seconds() / 60
+ans = (tmp["duration_min"] < 60).mean()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 24", title:"그룹핑, 값 찾기, 필터링",
+q:"category가 A인 데이터에서 city별 amount 합계를 구하시오. 합계가 가장 큰 city에 속한 전체 행의 개수를 ans에 저장하시오.",
+a:`top_city = df[df["category"] == "A"].groupby("city")["amount"].sum().idxmax()
+ans = (df["city"] == top_city).sum()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 25", title:"시간 간 차이 계산, 일",
+q:"date의 최댓값과 최솟값 차이를 일 단위로 계산해 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["date"] = pd.to_datetime(tmp["date"])
+ans = (tmp["date"].max() - tmp["date"].min()).days
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 26", title:"날짜와 시간 정보 변환, 비율",
+q:"start_time에서 시간(hour)을 추출하시오. 12시 이상인 행의 비율을 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["hour"] = tmp["start_time"].dt.hour
+ans = (tmp["hour"] >= 12).mean()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 27", title:"시간 범위, 속도",
+q:"duration_min을 계산하고 speed = distance_km / duration_hour를 만드시오. speed가 80km/h 이상인 행의 개수를 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["duration_hour"] = (tmp["end_time"] - tmp["start_time"]).dt.total_seconds() / 3600
+tmp["speed"] = tmp["distance_km"] / tmp["duration_hour"]
+ans = (tmp["speed"] >= 80).sum()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 28", title:"날짜와 시간, 문자열",
+q:"date를 YYYY-MM 형식 문자열 ym으로 변환하시오. ym이 2024-01인 행의 개수를 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["ym"] = pd.to_datetime(tmp["date"]).dt.strftime("%Y-%m")
+ans = (tmp["ym"] == "2024-01").sum()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 29", title:"함수, 월별 집계",
+q:"amount가 700 이상이면 high, 아니면 low를 반환하는 함수를 만들고 level 컬럼을 생성하시오. 월별 high 개수 중 최댓값을 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["month"] = pd.to_datetime(tmp["date"]).dt.month
+
+def make_level(x):
+    return "high" if x >= 700 else "low"
+
+tmp["level"] = tmp["amount"].apply(make_level)
+ans = tmp[tmp["level"] == "high"].groupby("month").size().max()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 30", title:"주말, 평일 구분",
+q:"date가 주말이면 weekend, 아니면 weekday로 구분하는 day_type을 만드시오. weekend 행의 amount 평균을 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["date"] = pd.to_datetime(tmp["date"])
+tmp["day_type"] = np.where(tmp["date"].dt.weekday >= 5, "weekend", "weekday")
+ans = tmp.loc[tmp["day_type"] == "weekend", "amount"].mean()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 31", title:"문자열, 형 변환",
+q:"num_str을 숫자로 변환하되 변환 불가능한 값은 결측치로 처리하시오. 변환된 값의 합계를 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["num"] = pd.to_numeric(tmp["num_str"], errors="coerce")
+ans = tmp["num"].sum()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 32", title:"합계, 상위 값 선택",
+q:"val1, val2, val3의 행 합계를 row_sum으로 만들고 row_sum 상위 5개 행의 amount 합계를 ans에 저장하시오.",
+a:`tmp = df.copy()
+tmp["row_sum"] = tmp[["val1","val2","val3"]].sum(axis=1)
+ans = tmp.nlargest(5, "row_sum")["amount"].sum()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 33", title:"데이터프레임 재구조화",
+q:"city를 행, category를 열로 하여 amount 평균 피벗테이블을 만드시오. 생성된 피벗테이블의 전체 결측치 개수를 ans에 저장하시오.",
+a:`pv = pd.pivot_table(df, index="city", columns="category", values="amount", aggfunc="mean")
+ans = pv.isna().sum().sum()
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 34", title:"데이터 합치기 concat",
+q:"df_a와 df_b를 행 방향으로 합친 뒤 id 기준 중복을 제거하시오. 최종 행 개수를 ans에 저장하시오.",
+a:`tmp = pd.concat([df_a, df_b], axis=0)
+tmp = tmp.drop_duplicates("id")
+ans = len(tmp)
+print(ans)`
+},
+{
+part:"작업형1", sec:"SECTION 35", title:"데이터 합치기 merge",
+q:"left와 right를 id 기준으로 inner merge하시오. grade가 Gold인 행의 amount 평균을 ans에 저장하시오.",
+a:`merged = pd.merge(left, right, on="id", how="inner")
+ans = merged.loc[merged["grade"] == "Gold", "amount"].mean()
+print(ans)`
+},
+
+{
+part:"작업형2", sec:"CH01-01", title:"지도학습, 비지도학습, 강화학습",
+q:"iris 데이터를 불러와 X, y로 나눈다. target이 있는 데이터이므로 지도학습인지 판별하는 문자열을 ans에 저장하시오.",
+a:`from sklearn.datasets import load_iris
+
+data = load_iris(as_frame=True)
+X = data.data
+y = data.target
+
+ans = "지도학습" if y is not None else "비지도학습"
+print(ans)`
+},
+{
+part:"작업형2", sec:"CH01-02", title:"분류와 회귀",
+q:"target의 고유 클래스 수가 2개 이상이고 이산형이면 분류, 연속형이면 회귀로 판단한다. iris target의 문제 유형을 ans에 저장하시오.",
+a:`from sklearn.datasets import load_iris
+
+data = load_iris(as_frame=True)
+y = data.target
+
+ans = "분류" if y.nunique() < 20 else "회귀"
+print(ans)`
+},
+{
+part:"작업형2", sec:"CH02-06", title:"분류 머신러닝 학습 및 평가",
+q:"RandomForestClassifier로 학습하고 검증 데이터 ROC-AUC를 ans에 저장하시오.",
+a:`from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_auc_score
+
+data = load_breast_cancer(as_frame=True)
+X_train, X_val, y_train, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42, stratify=data.target
+)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict_proba(X_val)[:, 1]
+
+ans = roc_auc_score(y_val, pred)
+print(ans)`
+},
+{
+part:"작업형2", sec:"CH03-03", title:"회귀 평가지표",
+q:"diabetes 데이터로 회귀 모델을 학습하고 RMSE를 ans에 저장하시오.",
+a:`from sklearn.datasets import load_diabetes
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+import numpy as np
+
+data = load_diabetes(as_frame=True)
+X_train, X_val, y_train, y_val = train_test_split(data.data, data.target, test_size=0.2, random_state=42)
+
+model = RandomForestRegressor(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict(X_val)
+
+ans = np.sqrt(mean_squared_error(y_val, pred))
+print(ans)`
+},
+{
+part:"작업형2", sec:"CH05", title:"다중 분류 실습 전체",
+q:"wine 데이터를 이용해 다중 분류 모델을 학습하고 macro F1-score를 ans에 저장하시오.",
+a:`from sklearn.datasets import load_wine
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
+
+data = load_wine(as_frame=True)
+X_train, X_val, y_train, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42, stratify=data.target
+)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict(X_val)
+
+ans = f1_score(y_val, pred, average="macro")
+print(ans)`
+},
+{
+part:"작업형2", sec:"CH08-03", title:"중고차 가격 예측",
+q:"연식, 주행거리, 배기량으로 중고차 가격을 예측하고 RMSE를 ans에 저장하시오.",
+a:`import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+
+np.random.seed(42)
+n = 350
+X = pd.DataFrame({
+    "year": np.random.randint(2010, 2024, n),
+    "mileage": np.random.randint(1000, 200000, n),
+    "cc": np.random.choice([1000,1600,2000,3000], n)
+})
+y = 5000000 + (X["year"]-2010)*700000 - X["mileage"]*20 + X["cc"]*800 + np.random.normal(0, 1000000, n)
+
+X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+model = RandomForestRegressor(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict(X_val)
+
+ans = mean_squared_error(y_val, pred, squared=False)
+print(ans)`
+},
+
+{
+part:"작업형3", sec:"CH01-02", title:"단일 표본 검정",
+q:"표본 평균이 기준값 70과 다른지 단일표본 t검정을 수행하고 p-value를 ans에 저장하시오.",
+a:`import numpy as np
+from scipy.stats import ttest_1samp
+
+np.random.seed(42)
+score = np.random.normal(72, 8, 30)
+
+stat, p = ttest_1samp(score, popmean=70)
+ans = p
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH01-03", title:"대응 표본 검정",
+q:"학습 전후 점수 차이가 있는지 대응표본 t검정을 수행하고 p-value를 ans에 저장하시오.",
+a:`import numpy as np
+from scipy.stats import ttest_rel
+
+np.random.seed(42)
+before = np.random.normal(65, 8, 30)
+after = before + np.random.normal(3, 4, 30)
+
+stat, p = ttest_rel(before, after)
+ans = p
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH01-04", title:"독립 표본 검정",
+q:"A반과 B반 평균 점수 차이가 있는지 독립표본 t검정을 수행하고 p-value를 ans에 저장하시오.",
+a:`import numpy as np
+from scipy.stats import ttest_ind
+
+np.random.seed(42)
+a = np.random.normal(70, 8, 30)
+b = np.random.normal(74, 8, 35)
+
+stat, p = ttest_ind(a, b, equal_var=False)
+ans = p
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH02-01", title:"일원 분산 분석",
+q:"세 그룹 평균 차이가 있는지 일원분산분석을 수행하고 p-value를 ans에 저장하시오.",
+a:`import numpy as np
+from scipy.stats import f_oneway
+
+np.random.seed(42)
+g1 = np.random.normal(70, 8, 30)
+g2 = np.random.normal(73, 8, 30)
+g3 = np.random.normal(78, 8, 30)
+
+stat, p = f_oneway(g1, g2, g3)
+ans = p
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH03-02", title:"카이제곱 독립성 검정",
+q:"성별과 구매여부가 독립인지 카이제곱 독립성 검정을 수행하고 p-value를 ans에 저장하시오.",
+a:`import pandas as pd
+from scipy.stats import chi2_contingency
+
+table = pd.DataFrame({
+    "buy": [30, 20],
+    "not_buy": [10, 25]
+}, index=["male", "female"])
+
+stat, p, dof, expected = chi2_contingency(table)
+ans = p
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH04-03", title:"다중 선형 회귀 분석",
+q:"y를 x1, x2로 설명하는 다중회귀를 적합하고 x1의 p-value를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+from statsmodels.formula.api import ols
+
+np.random.seed(42)
+df4 = pd.DataFrame({
+    "x1": np.random.normal(0, 1, 100),
+    "x2": np.random.normal(0, 1, 100)
+})
+df4["y"] = 5 + 2*df4["x1"] - 3*df4["x2"] + np.random.normal(0, 1, 100)
+
+model = ols("y ~ x1 + x2", data=df4).fit()
+ans = model.pvalues["x1"]
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH05-01", title:"로지스틱 회귀 분석",
+q:"age와 income으로 binary target을 예측하는 로지스틱 회귀를 적합하고 age의 p-value를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+
+np.random.seed(42)
+n = 200
+df5 = pd.DataFrame({
+    "age": np.random.randint(20, 70, n),
+    "income": np.random.randint(2000, 10000, n)
+})
+logit = -6 + 0.06*df5["age"] + 0.0004*df5["income"]
+prob = 1 / (1 + np.exp(-logit))
+df5["target"] = np.random.binomial(1, prob)
+
+X = sm.add_constant(df5[["age", "income"]])
+model = sm.Logit(df5["target"], X).fit(disp=False)
+
+ans = model.pvalues["age"]
+print(ans)`
+}
+];
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[m]));
+}
+
+function formatTheory(text){
+  return esc(text)
+    .replace(/\n/g, "<br>")
+    .replace(/핵심 이론/g, "<b>핵심 이론</b>")
+    .replace(/풀이 흐름/g, "<b>풀이 흐름</b>")
+    .replace(/주의할 점/g, "<b>주의할 점</b>");
+}
+
+function makeTheory(p){
+  const text = (p.title + " " + p.q).toLowerCase();
+  let lines = [];
+  lines.push("핵심 이론");
+
+  if(p.part === "작업형1"){
+    if(text.includes("필터링")){
+      lines.push("- 필터링은 조건식을 만든 뒤 df[조건] 또는 df.loc[조건] 형태로 사용한다.");
+      lines.push("- 여러 조건은 & 또는 | 로 연결하며, 각 조건은 반드시 괄호로 감싼다.");
+    }
+    if(text.includes("최솟값")) lines.push("- 최솟값은 min()으로 구한다. 결측치는 기본적으로 제외된다.");
+    if(text.includes("중앙값")) lines.push("- 중앙값은 median()으로 구한다. 평균보다 이상치의 영향을 덜 받는다.");
+    if(text.includes("카테고리")) lines.push("- 범주형 데이터는 value_counts(), mode(), groupby()와 자주 함께 사용된다.");
+    if(text.includes("인덱스") || text.includes("인덱싱")) lines.push("- loc는 라벨 기준, iloc는 위치 기준 인덱싱이다.");
+    if(text.includes("문자열")) lines.push("- 문자열 처리는 str 접근자를 사용한다. 예: str[:2], str.contains(), str.upper()");
+    if(text.includes("파생변수")) lines.push("- 파생변수는 기존 컬럼을 계산해 새 컬럼으로 추가하는 것이다.");
+    if(text.includes("정렬")) lines.push("- sort_values()를 사용해 정렬한다. ascending=False이면 내림차순이다.");
+    if(text.includes("결측")) lines.push("- 결측치는 isna(), notna()로 찾고 fillna(), dropna(), bfill(), ffill()로 처리한다.");
+    if(text.includes("중복")) lines.push("- 중복 제거는 drop_duplicates()를 사용한다.");
+    if(text.includes("합계")) lines.push("- 열 방향 합계는 axis=1, 컬럼 방향 합계는 기본값 axis=0을 사용한다.");
+    if(text.includes("분산")) lines.push("- pandas의 var()는 기본적으로 표본분산이다.");
+    if(text.includes("표준편차")) lines.push("- pandas의 std()는 기본적으로 표본표준편차다.");
+    if(text.includes("iqr") || text.includes("이상치")) lines.push("- IQR은 Q3 - Q1이며, 1.5*IQR 기준으로 이상치를 판단한다.");
+    if(text.includes("시계열") || text.includes("날짜") || text.includes("시간")){
+      lines.push("- 날짜/시간은 pd.to_datetime()으로 변환한 뒤 dt.year, dt.month, dt.hour 등을 사용한다.");
+      lines.push("- 시간 차이는 total_seconds()를 이용해 초, 분, 시간 단위로 변환한다.");
+    }
+    if(text.includes("그룹핑")) lines.push("- groupby()는 범주별 집계를 할 때 사용한다.");
+    if(text.includes("최빈값")) lines.push("- 최빈값은 mode()로 구하며 보통 mode()[0]을 사용한다.");
+    if(text.includes("사분위수")) lines.push("- quantile(0.25)는 제1사분위수, quantile(0.75)는 제3사분위수다.");
+    if(text.includes("재구조화")) lines.push("- pivot_table()은 데이터를 행/열 기준으로 재구조화하면서 집계한다.");
+    if(text.includes("concat")) lines.push("- concat은 데이터프레임을 행 방향 또는 열 방향으로 단순 연결할 때 사용한다.");
+    if(text.includes("merge")) lines.push("- merge는 공통 key 컬럼을 기준으로 데이터를 결합할 때 사용한다.");
+
+    lines.push("");
+    lines.push("풀이 흐름");
+    lines.push("1. 조건, 기준 컬럼, 집계 함수를 먼저 찾는다.");
+    lines.push("2. 필요한 경우 copy()로 원본을 보존한 뒤 파생변수나 결측치 처리를 한다.");
+    lines.push("3. 필터링, 정렬, 그룹핑, 집계 순서로 처리한다.");
+    lines.push("4. 최종 결과를 ans 변수에 저장한다.");
+
+    lines.push("");
+    lines.push("주의할 점");
+    lines.push("- 여러 조건을 연결할 때는 and/or가 아니라 & 또는 | 를 사용한다.");
+    lines.push("- 결측치가 포함된 컬럼은 평균, 중앙값 계산 시 자동 제외되는 경우가 많다.");
+    lines.push("- 시험에서는 ans에 정확한 값이 저장되는지가 중요하다.");
+  }
+
+  else if(p.part === "작업형2"){
+    lines.push("- 작업형2는 머신러닝 예측 문제다.");
+    lines.push("- 기본 흐름은 데이터 불러오기 → EDA → 전처리 → train/valid 분리 → 모델 학습 → 평가 → 예측 파일 생성이다.");
+
+    if(text.includes("분류")){
+      lines.push("- 분류는 target이 범주형일 때 사용한다.");
+      lines.push("- 이진 분류에서는 predict_proba()[:, 1]로 양성 클래스 확률을 구하는 경우가 많다.");
+    }
+    if(text.includes("회귀")){
+      lines.push("- 회귀는 target이 연속형 숫자일 때 사용한다.");
+      lines.push("- 회귀 평가지표로 RMSE, MAE, R² 등이 자주 사용된다.");
+    }
+    if(text.includes("다중")){
+      lines.push("- 다중 분류는 클래스가 3개 이상인 분류 문제다.");
+      lines.push("- macro F1-score는 각 클래스의 F1을 동일한 비중으로 평균낸다.");
+    }
+    if(text.includes("전처리")){
+      lines.push("- 수치형 변수는 StandardScaler, MinMaxScaler 등을 사용할 수 있다.");
+      lines.push("- 범주형 변수는 OneHotEncoder 또는 get_dummies()로 변환한다.");
+    }
+    if(text.includes("검증")){
+      lines.push("- train_test_split()으로 학습용과 검증용 데이터를 나눈다.");
+      lines.push("- 분류 문제에서는 stratify=y를 사용하면 클래스 비율이 유지된다.");
+    }
+    if(text.includes("roc") || text.includes("auc")){
+      lines.push("- ROC-AUC는 이진 분류에서 확률 예측 성능을 평가하는 대표 지표다.");
+    }
+    if(text.includes("rmse")) lines.push("- RMSE는 평균제곱오차의 제곱근이며, 값이 작을수록 좋다.");
+
+    lines.push("");
+    lines.push("풀이 흐름");
+    lines.push("1. X와 y를 분리한다.");
+    lines.push("2. train_test_split()으로 검증 데이터를 만든다.");
+    lines.push("3. 모델을 fit()으로 학습한다.");
+    lines.push("4. predict() 또는 predict_proba()로 예측한다.");
+    lines.push("5. 문제에서 요구하는 평가지표를 계산해 ans에 저장한다.");
+
+    lines.push("");
+    lines.push("주의할 점");
+    lines.push("- scaler나 encoder는 train 데이터로만 fit해야 데이터 누수를 막을 수 있다.");
+    lines.push("- 이진 분류 ROC-AUC는 클래스 예측값이 아니라 확률값을 넣는 것이 일반적이다.");
+  }
+
+  else if(p.part === "작업형3"){
+    lines.push("- 작업형3은 통계 검정과 회귀분석 문제다.");
+    lines.push("- 핵심은 귀무가설, 대립가설, 검정통계량, p-value, 유의수준 해석이다.");
+
+    if(text.includes("단일 표본")){
+      lines.push("- 단일표본 t검정은 한 집단의 평균이 특정 기준값과 다른지 검정한다.");
+      lines.push("- scipy.stats.ttest_1samp()를 사용한다.");
+    }
+    if(text.includes("대응 표본")){
+      lines.push("- 대응표본 t검정은 같은 대상의 전후 차이처럼 짝이 있는 두 평균을 비교한다.");
+      lines.push("- scipy.stats.ttest_rel()을 사용한다.");
+    }
+    if(text.includes("독립 표본")){
+      lines.push("- 독립표본 t검정은 서로 독립인 두 집단의 평균 차이를 검정한다.");
+      lines.push("- 등분산을 가정하지 않으면 equal_var=False를 사용한다.");
+    }
+    if(text.includes("일원")){
+      lines.push("- 일원분산분석은 하나의 요인에 따른 세 집단 이상 평균 차이를 검정한다.");
+      lines.push("- scipy.stats.f_oneway()를 사용할 수 있다.");
+    }
+    if(text.includes("이원")){
+      lines.push("- 이원분산분석은 두 요인과 상호작용 효과를 함께 검정한다.");
+      lines.push("- statsmodels의 ols()와 anova_lm()을 함께 사용한다.");
+    }
+    if(text.includes("카이제곱")){
+      lines.push("- 카이제곱 검정은 범주형 빈도 데이터 분석에 사용한다.");
+      lines.push("- 독립성 검정은 두 범주형 변수가 서로 관련 있는지 확인한다.");
+    }
+    if(text.includes("회귀")){
+      lines.push("- 회귀계수는 독립변수가 1 증가할 때 종속변수가 얼마나 변하는지 의미한다.");
+      lines.push("- p-value가 유의수준보다 작으면 해당 독립변수가 통계적으로 유의하다고 본다.");
+    }
+    if(text.includes("로지스틱") || text.includes("오즈")){
+      lines.push("- 로지스틱 회귀는 종속변수가 0/1인 이진 분류형일 때 사용한다.");
+      lines.push("- 회귀계수에 exp()를 취하면 오즈비가 된다.");
+    }
+
+    lines.push("");
+    lines.push("풀이 흐름");
+    lines.push("1. 어떤 검정인지 먼저 판단한다.");
+    lines.push("2. 귀무가설과 대립가설을 세운다.");
+    lines.push("3. scipy 또는 statsmodels로 검정을 수행한다.");
+    lines.push("4. p-value를 유의수준 0.05와 비교한다.");
+    lines.push("5. p-value < 0.05이면 귀무가설을 기각한다.");
+
+    lines.push("");
+    lines.push("주의할 점");
+    lines.push("- p-value < 0.05이면 보통 통계적으로 유의하다고 판단한다.");
+    lines.push("- 회귀분석에서는 계수, p-value, R², 오즈비 해석이 자주 출제된다.");
+  }
+
+  return lines.join("\n");
+}
+
+function render(){
+  const keyword = document.getElementById("search").value.toLowerCase();
+  const part = document.getElementById("part").value;
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  problems
+    .filter(p => !part || p.part === part)
+    .filter(p => (p.part+p.sec+p.title+p.q).toLowerCase().includes(keyword))
+    .forEach((p, i) => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        <div class="meta">
+          <span class="tag">${esc(p.part)}</span>
+          <span class="tag">${esc(p.sec)}</span>
+        </div>
+        <h2>${i+1}. ${esc(p.title)}</h2>
+        <div class="q">${esc(p.q)}</div>
+
+        <details class="answer">
+          <summary>정답 펼치기/접기</summary>
+          <pre><code>${esc(p.a)}</code></pre>
+
+          <details class="theory">
+            <summary>이론 / 풀이 설명 펼치기</summary>
+            <div class="theory-text">${formatTheory(makeTheory(p))}</div>
+          </details>
+        </details>
+      `;
+      list.appendChild(div);
+    });
+}
+
+function closeAll(){
+  document.querySelectorAll("details.answer, details.theory").forEach(d => d.open = false);
+}
+
+document.getElementById("search").addEventListener("input", render);
+document.getElementById("part").addEventListener("change", render);
+render();
+</script>
+</body>
+</html>
