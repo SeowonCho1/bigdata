@@ -5,63 +5,92 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>빅데이터분석기사 실기 Python 섹션별 확인문제</title>
 <style>
-  body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f6f7fb;color:#1f2937;margin:0}
-  header{background:#111827;color:white;padding:28px 20px}
-  header h1{margin:0;font-size:26px}
-  header p{margin:8px 0 0;color:#d1d5db}
-  .wrap{max-width:1100px;margin:0 auto;padding:22px}
-  .toolbar{position:sticky;top:0;background:#f6f7fb;padding:12px 0;z-index:10;display:flex;gap:8px;flex-wrap:wrap}
-  input,select,button{font-size:15px;padding:10px;border:1px solid #d1d5db;border-radius:10px}
-  input{width:42%;min-width:240px}
-  button{background:#111827;color:white;cursor:pointer}
-  .card{background:white;border:1px solid #e5e7eb;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 3px 10px rgba(0,0,0,.04)}
-  .meta{font-size:13px;color:#6b7280;margin-bottom:8px}
-  .tag{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:999px;padding:3px 9px;margin-right:6px}
-  h2{font-size:19px;margin:6px 0 10px}
-  pre{background:#0f172a;color:#e5e7eb;padding:14px;border-radius:12px;overflow:auto}
-  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
-  details.answer{margin-top:12px;border-top:1px dashed #e5e7eb;padding-top:12px}
-  details.answer summary{cursor:pointer;font-weight:700;color:#b45309}
-  .q{line-height:1.65}
-  .notice{background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:14px;margin:14px 0}
-  details.theory{
-    margin-top:12px;
-    background:#f8fafc;
-    border:1px solid #e2e8f0;
-    border-radius:12px;
-    padding:12px;
+  *{box-sizing:border-box}
+  body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f1f5f9;color:#1e293b;margin:0}
+  header{background:#0f172a;color:white;padding:26px 20px}
+  header h1{margin:0;font-size:24px;font-weight:800}
+  header p{margin:6px 0 0;color:#94a3b8;font-size:13px}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px 32px}
+
+  /* 탭 네비게이션 */
+  .tab-nav{position:sticky;top:0;z-index:100;background:#0f172a;padding:0 20px;display:flex;gap:0}
+  .tab-btn{
+    font-size:14px;font-weight:700;padding:14px 28px;border:none;background:transparent;
+    color:#94a3b8;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap
   }
-  details.theory summary{
-    cursor:pointer;
-    font-weight:700;
-    color:#2563eb;
-  }
-  .theory-text{
-    margin-top:10px;
-    line-height:1.7;
-    font-size:14px;
-    color:#334155;
-    white-space:normal;
-  }
+  .tab-btn:hover{color:#e2e8f0}
+  .tab-btn.active{color:white;border-bottom-color:#6366f1}
+
+  /* 툴바 */
+  .toolbar{background:#f1f5f9;padding:14px 0 10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:4px}
+  .toolbar input{flex:1;min-width:220px;font-size:14px;padding:9px 14px;border:1px solid #cbd5e1;border-radius:10px;outline:none}
+  .toolbar input:focus{border-color:#6366f1}
+  .close-btn{font-size:13px;padding:9px 16px;border:1px solid #cbd5e1;border-radius:10px;background:white;cursor:pointer;color:#475569;white-space:nowrap}
+  .close-btn:hover{background:#0f172a;color:white;border-color:#0f172a}
+
+  /* 탭 패널 */
+  .tab-panel{display:none}
+  .tab-panel.active{display:block}
+
+  /* 공통 데이터 박스 */
+  .data-box{background:#1e293b;border-radius:14px;padding:16px 18px;margin:16px 0}
+  .data-box-title{color:#94a3b8;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px}
+  .data-box-title::before{content:"▶";font-size:10px;transition:transform .2s}
+  .data-box.open .data-box-title::before{transform:rotate(90deg)}
+  .data-box pre{display:none;margin:0}
+  .data-box.open pre{display:block}
+  .data-box pre{background:transparent;padding:0;border-radius:0}
+
+  /* 안내 배너 */
+  .notice{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:12px 16px;margin:14px 0;font-size:13px;color:#92400e}
+  .notice b{color:#78350f}
+
+  /* 카드 */
+  .card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:18px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+  .meta{font-size:12px;color:#6b7280;margin-bottom:6px;display:flex;gap:6px}
+  .tag{display:inline-block;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600}
+  .tag-part{background:#ede9fe;color:#5b21b6}
+  .tag-sec{background:#f0fdf4;color:#166534}
+  h2{font-size:17px;font-weight:700;margin:6px 0 10px;color:#0f172a}
+  .q{line-height:1.7;font-size:14px;color:#334155}
+  pre{background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px;overflow:auto;font-size:13px;line-height:1.6}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  details.answer{margin-top:12px;border-top:1px dashed #e5e7eb;padding-top:10px}
+  details.answer>summary{cursor:pointer;font-weight:700;color:#b45309;font-size:14px}
+  details.theory{margin-top:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px}
+  details.theory summary{cursor:pointer;font-weight:700;color:#2563eb;font-size:13px}
+  .theory-text{margin-top:8px;line-height:1.75;font-size:13px;color:#334155}
   .theory-text b{color:#111827}
+  .count-badge{font-size:12px;color:#94a3b8;margin-left:auto}
+  .empty{text-align:center;color:#94a3b8;padding:60px 0;font-size:15px}
 </style>
 </head>
 <body>
 <header>
-  <div class="wrap">
+  <div style="max-width:1100px;margin:0 auto">
     <h1>빅데이터분석기사 실기 Python 섹션별 확인문제</h1>
-    <p>작업형 1 · 작업형 2 · 작업형 3 / 정답과 이론 설명은 기본 접힘 상태</p>
+    <p>정답과 이론 설명은 기본 접힘 상태 · ans 변수에 최종 답 저장</p>
   </div>
 </header>
 
-<div class="wrap">
-  <div class="notice">
-    문제는 실기 연습용입니다. 답은 Python 코드 기준이며, 각 문항은 가능한 한 <b>ans</b> 변수에 최종 답을 저장하도록 구성했습니다.
-  </div>
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="t1">작업형 1</button>
+  <button class="tab-btn" data-tab="t2">작업형 2</button>
+  <button class="tab-btn" data-tab="t3">작업형 3</button>
+</nav>
 
-  <details>
-    <summary><b>작업형 1 공통 데이터 생성 코드 펼치기</b></summary>
-<pre><code>import pandas as pd
+<div class="wrap">
+
+  <!-- 작업형 1 -->
+  <div class="tab-panel active" id="t1">
+    <div class="toolbar">
+      <input id="search1" placeholder="검색: 예) IQR, 그룹핑, merge, 시계열" />
+      <button class="close-btn" onclick="closeAll('t1')">정답 모두 접기</button>
+      <span class="count-badge" id="cnt1"></span>
+    </div>
+    <div class="data-box" id="dataBox">
+      <div class="data-box-title" onclick="toggleDataBox()">공통 데이터 생성 코드 (문제 실행 전 먼저 실행하세요)</div>
+      <pre><code>import pandas as pd
 import numpy as np
 
 np.random.seed(2026)
@@ -106,22 +135,33 @@ left = df[["id","city","amount"]].head(15).copy()
 right = pd.DataFrame({
     "id": df["id"].head(15),
     "grade": np.random.choice(["Gold","Silver","Bronze"], 15)
-})
-</code></pre>
-  </details>
-
-  <div class="toolbar">
-    <input id="search" placeholder="검색: 예) IQR, 회귀, 카이제곱, merge" />
-    <select id="part">
-      <option value="">전체</option>
-      <option value="작업형1">작업형1</option>
-      <option value="작업형2">작업형2</option>
-      <option value="작업형3">작업형3</option>
-    </select>
-    <button onclick="closeAll()">정답 모두 접기</button>
+})</code></pre>
+    </div>
+    <div id="list1"></div>
   </div>
 
-  <div id="list"></div>
+  <!-- 작업형 2 -->
+  <div class="tab-panel" id="t2">
+    <div class="toolbar">
+      <input id="search2" placeholder="검색: 예) ROC-AUC, RMSE, 분류, 회귀" />
+      <button class="close-btn" onclick="closeAll('t2')">정답 모두 접기</button>
+      <span class="count-badge" id="cnt2"></span>
+    </div>
+    <div class="notice">sklearn 라이브러리를 사용합니다. 데이터는 각 문제 코드에 포함되어 있습니다.</div>
+    <div id="list2"></div>
+  </div>
+
+  <!-- 작업형 3 -->
+  <div class="tab-panel" id="t3">
+    <div class="toolbar">
+      <input id="search3" placeholder="검색: 예) t검정, 카이제곱, 분산분석, 로지스틱" />
+      <button class="close-btn" onclick="closeAll('t3')">정답 모두 접기</button>
+      <span class="count-badge" id="cnt3"></span>
+    </div>
+    <div class="notice">scipy, statsmodels를 사용합니다. p-value와 유의수준 0.05를 기준으로 해석합니다.</div>
+    <div id="list3"></div>
+  </div>
+
 </div>
 
 <script>
@@ -799,47 +839,79 @@ function makeTheory(p){
   return lines.join("\n");
 }
 
-function render(){
-  const keyword = document.getElementById("search").value.toLowerCase();
-  const part = document.getElementById("part").value;
-  const list = document.getElementById("list");
+const partMap = {"작업형1":"t1","작업형2":"t2","작업형3":"t3"};
+
+function renderTab(tabId){
+  const partKey = Object.keys(partMap).find(k => partMap[k] === tabId);
+  const searchId = "search" + tabId.slice(1);
+  const listId = "list" + tabId.slice(1);
+  const cntId = "cnt" + tabId.slice(1);
+  const keyword = document.getElementById(searchId).value.toLowerCase();
+  const list = document.getElementById(listId);
   list.innerHTML = "";
 
-  problems
-    .filter(p => !part || p.part === part)
-    .filter(p => (p.part+p.sec+p.title+p.q).toLowerCase().includes(keyword))
-    .forEach((p, i) => {
-      const div = document.createElement("div");
-      div.className = "card";
-      div.innerHTML = `
-        <div class="meta">
-          <span class="tag">${esc(p.part)}</span>
-          <span class="tag">${esc(p.sec)}</span>
-        </div>
-        <h2>${i+1}. ${esc(p.title)}</h2>
-        <div class="q">${esc(p.q)}</div>
+  const filtered = problems
+    .filter(p => p.part === partKey)
+    .filter(p => (p.sec+p.title+p.q).toLowerCase().includes(keyword));
 
-        <details class="answer">
-          <summary>정답 펼치기/접기</summary>
-          <pre><code>${esc(p.a)}</code></pre>
+  document.getElementById(cntId).textContent = filtered.length + "문제";
 
-          <details class="theory">
-            <summary>이론 / 풀이 설명 펼치기</summary>
-            <div class="theory-text">${formatTheory(makeTheory(p))}</div>
-          </details>
+  if(filtered.length === 0){
+    list.innerHTML = `<div class="empty">검색 결과가 없습니다.</div>`;
+    return;
+  }
+
+  filtered.forEach((p, i) => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <div class="meta">
+        <span class="tag tag-sec">${esc(p.sec)}</span>
+      </div>
+      <h2>${i+1}. ${esc(p.title)}</h2>
+      <div class="q">${esc(p.q)}</div>
+      <details class="answer">
+        <summary>정답 펼치기 / 접기</summary>
+        <pre><code>${esc(p.a)}</code></pre>
+        <details class="theory">
+          <summary>이론 / 풀이 설명 펼치기</summary>
+          <div class="theory-text">${formatTheory(makeTheory(p))}</div>
         </details>
-      `;
-      list.appendChild(div);
-    });
+      </details>
+    `;
+    list.appendChild(div);
+  });
 }
 
-function closeAll(){
-  document.querySelectorAll("details.answer, details.theory").forEach(d => d.open = false);
+function closeAll(tabId){
+  const panel = document.getElementById(tabId);
+  panel.querySelectorAll("details.answer, details.theory").forEach(d => d.open = false);
 }
 
-document.getElementById("search").addEventListener("input", render);
-document.getElementById("part").addEventListener("change", render);
-render();
+function toggleDataBox(){
+  document.getElementById("dataBox").classList.toggle("open");
+}
+
+// 탭 전환
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+    renderTab(btn.dataset.tab);
+  });
+});
+
+// 검색 이벤트
+["1","2","3"].forEach(n => {
+  document.getElementById("search"+n).addEventListener("input", () => renderTab("t"+n));
+});
+
+// 초기 렌더
+renderTab("t1");
+renderTab("t2");
+renderTab("t3");
 </script>
 </body>
 </html>
