@@ -1,0 +1,1462 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>빅데이터분석기사 실기 | PART 1 기본 이론</title>
+<style>
+  *{box-sizing:border-box}
+  body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f1f5f9;color:#1e293b;margin:0}
+  header{background:#0f172a;color:white;padding:30px 20px}
+  header h1{margin:0;font-size:26px;letter-spacing:-0.5px}
+  header p{margin:8px 0 0;color:#94a3b8;font-size:14px}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 20px}
+
+  /* 툴바 */
+  .toolbar{position:sticky;top:0;z-index:100;background:#f1f5f9;padding:12px 0;display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid #e2e8f0;margin-bottom:20px}
+  .toolbar input{flex:1;min-width:220px;font-size:15px;padding:10px 14px;border:1px solid #cbd5e1;border-radius:10px;outline:none}
+  .toolbar input:focus{border-color:#6366f1}
+  .ch-btns{display:flex;gap:6px;flex-wrap:wrap}
+  .ch-btn{font-size:13px;padding:8px 14px;border:1px solid #cbd5e1;border-radius:8px;background:white;cursor:pointer;color:#475569;transition:all .15s}
+  .ch-btn.active,.ch-btn:hover{background:#0f172a;color:white;border-color:#0f172a}
+
+  /* 챕터 헤더 */
+  .chapter-block{margin-bottom:32px}
+  .chapter-title{font-size:20px;font-weight:800;color:#0f172a;padding:14px 18px;background:white;border-left:5px solid #6366f1;border-radius:0 12px 12px 0;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+
+  /* 섹션 카드 */
+  .section-card{background:white;border:1px solid #e2e8f0;border-radius:14px;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+  .sec-header{display:flex;align-items:center;gap:12px;padding:16px 18px;cursor:pointer;user-select:none}
+  .sec-header:hover{background:#f8fafc}
+  .sec-num{background:#eef2ff;color:#4f46e5;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+  .sec-title{font-size:16px;font-weight:700;flex:1}
+  .sec-arrow{color:#94a3b8;font-size:12px;transition:transform .2s}
+  .sec-header.open .sec-arrow{transform:rotate(180deg)}
+  .sec-body{display:none;padding:0 18px 18px;border-top:1px solid #f1f5f9}
+  .sec-body.open{display:block}
+
+  /* 이론 내용 */
+  .theory-section{margin-top:14px}
+  .theory-section h4{font-size:13px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px}
+  .desc{font-size:14px;line-height:1.75;color:#334155;margin:0 0 12px}
+  .desc b{color:#0f172a}
+  .key-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px}
+  .key-table th{background:#f8fafc;color:#475569;font-weight:700;padding:8px 12px;text-align:left;border:1px solid #e2e8f0}
+  .key-table td{padding:7px 12px;border:1px solid #e2e8f0;vertical-align:top;line-height:1.6}
+  .key-table td:first-child{font-family:ui-monospace,Consolas,monospace;color:#7c3aed;font-size:12px;white-space:nowrap}
+  .key-table tr:nth-child(even) td{background:#fafafa}
+  pre{background:#0f172a;color:#e2e8f0;padding:14px 16px;border-radius:10px;overflow-x:auto;font-size:13px;margin:0 0 12px;line-height:1.6}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .tip{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:13px;color:#92400e;margin-bottom:12px}
+  .tip b{color:#78350f}
+  .warn{background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:10px 14px;font-size:13px;color:#9f1239;margin-bottom:12px}
+  .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .tag{display:inline-block;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600}
+
+  /* 없는 결과 */
+  .empty{text-align:center;color:#94a3b8;padding:60px 0;font-size:15px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap" style="padding:0">
+    <h1>빅데이터분석기사 실기 | PART 1 기본 이론</h1>
+    <p>작업형 1 · CHAPTER 01 파이썬 · CHAPTER 02 판다스</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="toolbar">
+    <input id="search" placeholder="섹션 검색: 예) 필터링, 슬라이싱, 문자열..." />
+    <div class="ch-btns">
+      <button class="ch-btn active" data-ch="">전체</button>
+      <button class="ch-btn" data-ch="ch01">CHAPTER 01 파이썬</button>
+      <button class="ch-btn" data-ch="ch02">CHAPTER 02 판다스</button>
+    </div>
+  </div>
+
+  <div id="content"></div>
+</div>
+
+<script>
+const sections = [
+// ───────────────────────────── CHAPTER 01 파이썬 ─────────────────────────────
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 01", title:"출력",
+  tags:["print","sep","end","f-string"],
+  desc:`파이썬에서 화면에 값을 출력할 때 <b>print()</b> 함수를 사용합니다.`,
+  table:[
+    ["print(값)", "기본 출력"],
+    ["print(a, b)", "여러 값을 공백으로 구분해 출력"],
+    ["print(a, b, sep=',')", "sep로 구분자 지정"],
+    ["print(a, end='')", "end로 줄바꿈 대신 다른 문자 지정"],
+    ["f\"{변수}\"", "f-string으로 변수를 문자열 안에 삽입"],
+  ],
+  code:`# 기본 출력
+print("Hello, World!")
+
+# 여러 값 출력
+a, b = 10, 20
+print(a, b)           # 10 20
+print(a, b, sep="-")  # 10-20
+print(a, end=" ")
+print(b)              # 10 20
+
+# f-string
+name = "김서원"
+score = 95
+print(f"이름: {name}, 점수: {score}")  # 이름: 김서원, 점수: 95
+print(f"점수의 2배: {score * 2}")      # 점수의 2배: 190`,
+  tip:`<b>시험 팁:</b> 최종 답은 print(ans) 형태로 출력하면 됩니다. f-string은 결과 확인 시 유용합니다.`
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 02", title:"주석",
+  tags:["#","'''","\"\"\""],
+  desc:`주석은 코드 실행에 영향을 주지 않고 설명을 남기는 문법입니다.`,
+  table:[
+    ["# 내용", "한 줄 주석"],
+    ["'''내용'''", "여러 줄 주석 (작은따옴표 3개)"],
+    ['"""내용"""', "여러 줄 주석 (큰따옴표 3개)"],
+  ],
+  code:`# 한 줄 주석
+x = 10  # 변수 선언
+
+'''
+여러 줄 주석
+이 부분은 실행되지 않습니다
+'''
+
+"""
+이것도 여러 줄 주석입니다
+"""`,
+  tip:`<b>시험 팁:</b> 주석을 활용해 풀이 단계를 메모하면 복잡한 문제에서 실수를 줄일 수 있습니다.`
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 03", title:"산술 연산자",
+  tags:["+","-","*","/","//","%","**"],
+  desc:`파이썬의 기본 산술 연산자입니다. <b>//</b>는 정수 나눗셈, <b>%</b>는 나머지, <b>**</b>는 거듭제곱입니다.`,
+  table:[
+    ["+", "덧셈   5 + 3 → 8"],
+    ["-", "뺄셈   5 - 3 → 2"],
+    ["*", "곱셈   5 * 3 → 15"],
+    ["/", "나눗셈 (결과: float)   5 / 2 → 2.5"],
+    ["//", "정수 나눗셈 (몫)   5 // 2 → 2"],
+    ["%", "나머지   5 % 2 → 1"],
+    ["**", "거듭제곱   2 ** 3 → 8"],
+  ],
+  code:`print(5 + 3)   # 8
+print(5 - 3)   # 2
+print(5 * 3)   # 15
+print(5 / 2)   # 2.5
+print(5 // 2)  # 2
+print(5 % 2)   # 1
+print(2 ** 3)  # 8
+
+# 복합 대입 연산자
+x = 10
+x += 5   # x = x + 5 → 15
+x -= 3   # x = x - 3 → 12
+x *= 2   # x = x * 2 → 24
+print(x) # 24`,
+  tip:`<b>시험 팁:</b> <code>%</code>는 소수점 여부 확인 시 자주 씁니다. <code>df["col"] % 1 != 0</code> → 소수점 있는 행 찾기`
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 04", title:"자료형",
+  tags:["int","float","str","bool","list","dict","tuple","set","type()"],
+  desc:`파이썬의 기본 자료형(타입)입니다. <b>type()</b> 함수로 자료형을 확인할 수 있습니다.`,
+  table:[
+    ["int", "정수   예) 1, -5, 100"],
+    ["float", "실수(소수)   예) 3.14, -0.5"],
+    ["str", "문자열   예) \"hello\", '빅분기'"],
+    ["bool", "참/거짓   True, False"],
+    ["list", "순서 있는 가변 컬렉션   예) [1, 2, 3]"],
+    ["tuple", "순서 있는 불변 컬렉션   예) (1, 2, 3)"],
+    ["dict", "키-값 쌍   예) {\"a\": 1}"],
+    ["set", "중복 없는 집합   예) {1, 2, 3}"],
+    ["NoneType", "값이 없음   None"],
+  ],
+  code:`print(type(10))      # <class 'int'>
+print(type(3.14))    # <class 'float'>
+print(type("hello")) # <class 'str'>
+print(type(True))    # <class 'bool'>
+print(type([1,2]))   # <class 'list'>
+print(type(None))    # <class 'NoneType'>
+
+# isinstance로 타입 확인
+x = 3.14
+print(isinstance(x, float))  # True
+print(isinstance(x, int))    # False`,
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 05", title:"변수",
+  tags:["변수 선언","다중 할당","상수"],
+  desc:`변수는 값을 저장하는 이름표입니다. 파이썬은 자료형을 따로 선언하지 않아도 됩니다.`,
+  table:[
+    ["x = 10", "변수 선언 및 값 할당"],
+    ["a, b = 1, 2", "다중 할당"],
+    ["a, b = b, a", "두 변수 값 교환"],
+    ["x = y = 0", "같은 값을 여러 변수에 할당"],
+  ],
+  code:`# 변수 선언
+name = "빅데이터"
+score = 95
+rate = 0.85
+is_pass = True
+
+# 다중 할당
+x, y, z = 1, 2, 3
+print(x, y, z)  # 1 2 3
+
+# 값 교환
+a, b = 10, 20
+a, b = b, a
+print(a, b)     # 20 10
+
+# 같은 값 할당
+x = y = 0
+print(x, y)     # 0 0`,
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 06", title:"자료형 변환",
+  tags:["int()","float()","str()","list()","bool()"],
+  desc:`자료형을 다른 타입으로 변환하는 함수들입니다.`,
+  table:[
+    ["int(x)", "정수로 변환   int(\"3\") → 3, int(3.9) → 3"],
+    ["float(x)", "실수로 변환   float(\"3.14\") → 3.14"],
+    ["str(x)", "문자열로 변환   str(100) → \"100\""],
+    ["bool(x)", "불리언으로 변환   bool(0) → False, bool(1) → True"],
+    ["list(x)", "리스트로 변환   list(\"abc\") → ['a','b','c']"],
+    ["tuple(x)", "튜플로 변환"],
+    ["set(x)", "집합으로 변환 (중복 제거)"],
+  ],
+  code:`# 문자열 → 숫자
+a = int("10")
+b = float("3.14")
+print(a + b)   # 13.14
+
+# 숫자 → 문자열
+s = str(100)
+print(s + "점")   # 100점
+
+# bool 변환 (0, "", None, [] → False / 나머지 → True)
+print(bool(0))    # False
+print(bool(""))   # False
+print(bool(1))    # True
+print(bool("hi")) # True
+
+# int는 소수점 이하 버림
+print(int(3.9))   # 3
+print(int(-3.9))  # -3`,
+  tip:`<b>시험 팁:</b> pandas에서 문자열 컬럼을 숫자로 변환할 때는 <code>pd.to_numeric(df["col"], errors="coerce")</code>를 사용합니다.`
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 07", title:"비교 연산자",
+  tags:["==","!=",">","<",">=","<=","in","not in","is"],
+  desc:`두 값을 비교해 <b>True</b> 또는 <b>False</b>를 반환합니다.`,
+  table:[
+    ["==", "같다   3 == 3 → True"],
+    ["!=", "다르다   3 != 4 → True"],
+    [">", "크다   5 > 3 → True"],
+    ["<", "작다   2 < 3 → True"],
+    [">=", "크거나 같다"],
+    ["<=", "작거나 같다"],
+    ["in", "포함 여부   'a' in ['a','b'] → True"],
+    ["not in", "미포함 여부"],
+    ["is", "동일 객체 여부 (None 비교 시 사용)"],
+    ["and", "논리 AND (둘 다 True여야 True)"],
+    ["or", "논리 OR (하나만 True여도 True)"],
+    ["not", "논리 NOT (반전)"],
+  ],
+  code:`print(3 == 3)        # True
+print(3 != 4)        # True
+print(5 > 3)         # True
+
+# 논리 연산자
+x = 7
+print(x > 5 and x < 10)  # True
+print(x < 5 or x > 6)    # True
+print(not x > 5)          # False
+
+# in 연산자
+cities = ["Seoul", "Busan"]
+print("Seoul" in cities)   # True
+print("Daegu" not in cities)  # True
+
+# None 비교 (is 사용 권장)
+val = None
+print(val is None)   # True`,
+  warn:`<b>주의:</b> pandas 조건 필터링에서는 <code>and/or</code> 대신 <code>&amp; / |</code>를 사용하고, 각 조건을 괄호로 감싸야 합니다.`
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 08", title:"조건문",
+  tags:["if","elif","else","삼항 연산자"],
+  desc:`조건에 따라 코드 흐름을 분기합니다. 들여쓰기(보통 스페이스 4칸)로 블록을 구분합니다.`,
+  table:[
+    ["if 조건:", "조건이 True이면 실행"],
+    ["elif 조건:", "앞 조건이 False이고 이 조건이 True이면 실행"],
+    ["else:", "모든 조건이 False이면 실행"],
+    ["값1 if 조건 else 값2", "삼항(조건부) 표현식"],
+  ],
+  code:`score = 78
+
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+elif score >= 70:
+    grade = "C"
+else:
+    grade = "F"
+print(grade)  # C
+
+# 삼항 표현식
+result = "합격" if score >= 70 else "불합격"
+print(result)  # 합격
+
+# 함수와 함께 사용
+def classify(x):
+    if x >= 700:
+        return "high"
+    else:
+        return "low"
+
+# apply와 함께 사용 (pandas)
+# df["level"] = df["amount"].apply(classify)`,
+  tip:`<b>시험 팁:</b> pandas에서 조건부 값 생성은 <code>np.where(조건, 참값, 거짓값)</code>으로도 빠르게 할 수 있습니다.`
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 09", title:"리스트",
+  tags:["list","append","extend","insert","remove","pop","sort","len"],
+  desc:`리스트는 여러 값을 순서대로 저장하는 자료구조입니다. 인덱스로 접근하며, 값 변경이 가능합니다.`,
+  table:[
+    ["lst.append(x)", "끝에 요소 추가"],
+    ["lst.extend([x,y])", "여러 요소 추가"],
+    ["lst.insert(i, x)", "i번째 위치에 x 삽입"],
+    ["lst.remove(x)", "첫 번째 x 제거"],
+    ["lst.pop(i)", "i번째 요소 꺼내기 (기본: 마지막)"],
+    ["lst.sort()", "오름차순 정렬 (원본 변경)"],
+    ["sorted(lst)", "정렬된 새 리스트 반환 (원본 유지)"],
+    ["len(lst)", "길이"],
+    ["lst.count(x)", "x의 개수"],
+    ["lst.index(x)", "x의 위치"],
+    ["x in lst", "포함 여부"],
+  ],
+  code:`lst = [3, 1, 4, 1, 5, 9, 2]
+
+lst.append(6)
+print(lst)         # [3, 1, 4, 1, 5, 9, 2, 6]
+
+lst.sort()
+print(lst)         # [1, 1, 2, 3, 4, 5, 6, 9]
+
+print(len(lst))    # 8
+print(lst.count(1))# 2
+
+# 리스트 컴프리헨션
+squares = [x**2 for x in range(1, 6)]
+print(squares)     # [1, 4, 9, 16, 25]
+
+# 조건부 컴프리헨션
+evens = [x for x in range(10) if x % 2 == 0]
+print(evens)       # [0, 2, 4, 6, 8]`,
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 10", title:"딕셔너리",
+  tags:["dict","keys()","values()","items()","get()"],
+  desc:`딕셔너리는 <b>키(key): 값(value)</b> 쌍으로 데이터를 저장합니다. 키는 중복 불가입니다.`,
+  table:[
+    ["d[key]", "키로 값 접근"],
+    ["d.get(key, 기본값)", "키 없으면 기본값 반환 (오류 없음)"],
+    ["d[key] = val", "값 추가 / 변경"],
+    ["del d[key]", "키-값 삭제"],
+    ["key in d", "키 존재 여부"],
+    ["d.keys()", "모든 키 반환"],
+    ["d.values()", "모든 값 반환"],
+    ["d.items()", "키-값 튜플 쌍 반환"],
+  ],
+  code:`person = {"name": "김서원", "age": 25, "score": 92}
+
+print(person["name"])          # 김서원
+print(person.get("city", "없음"))  # 없음
+
+person["city"] = "Seoul"       # 키 추가
+person["age"] = 26             # 값 변경
+
+for key, val in person.items():
+    print(f"{key}: {val}")
+
+# 딕셔너리 컴프리헨션
+scores = {"a": 80, "b": 92, "c": 75}
+passed = {k: v for k, v in scores.items() if v >= 80}
+print(passed)  # {'a': 80, 'b': 92}`,
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 11", title:"인덱싱과 슬라이싱",
+  tags:["인덱스","슬라이싱","[:]","음수 인덱스"],
+  desc:`인덱싱은 특정 위치의 값을 가져오고, 슬라이싱은 범위를 지정해 부분 추출합니다.`,
+  table:[
+    ["lst[0]", "첫 번째 요소 (0부터 시작)"],
+    ["lst[-1]", "마지막 요소"],
+    ["lst[2:5]", "인덱스 2 이상 5 미만"],
+    ["lst[:3]", "처음부터 인덱스 3 미만"],
+    ["lst[2:]", "인덱스 2부터 끝까지"],
+    ["lst[::2]", "2칸씩 건너뛰며 선택"],
+    ["lst[::-1]", "역순"],
+    ["s[1:3]", "문자열도 동일하게 적용"],
+  ],
+  code:`lst = [10, 20, 30, 40, 50]
+
+print(lst[0])    # 10
+print(lst[-1])   # 50
+print(lst[1:3])  # [20, 30]
+print(lst[:3])   # [10, 20, 30]
+print(lst[2:])   # [30, 40, 50]
+print(lst[::-1]) # [50, 40, 30, 20, 10]
+
+# 문자열 슬라이싱
+s = "AB-001"
+print(s[:2])   # AB
+print(s[3:])   # 001
+print(s[-3:])  # 001`,
+  tip:`<b>시험 팁:</b> pandas에서 <code>df["id"].str[:2]</code>처럼 문자열 컬럼 슬라이싱도 같은 문법을 사용합니다.`
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 12", title:"내장 함수",
+  tags:["len","range","sum","max","min","abs","round","sorted","enumerate","zip","map"],
+  desc:`파이썬에 기본으로 내장된 유용한 함수들입니다.`,
+  table:[
+    ["len(x)", "길이/개수"],
+    ["range(n)", "0부터 n-1까지의 정수 시퀀스"],
+    ["range(a,b)", "a부터 b-1까지"],
+    ["sum(iterable)", "합계"],
+    ["max(iterable)", "최댓값"],
+    ["min(iterable)", "최솟값"],
+    ["abs(x)", "절댓값"],
+    ["round(x, n)", "n자리로 반올림"],
+    ["sorted(iterable)", "정렬된 리스트 반환"],
+    ["enumerate(iterable)", "인덱스와 값을 함께 반환"],
+    ["zip(a, b)", "두 시퀀스를 묶어 반환"],
+    ["map(func, iterable)", "각 요소에 함수 적용"],
+  ],
+  code:`nums = [3, 1, 4, 1, 5, 9, 2]
+
+print(len(nums))   # 7
+print(sum(nums))   # 25
+print(max(nums))   # 9
+print(min(nums))   # 1
+print(abs(-7))     # 7
+print(round(3.567, 2))  # 3.57
+
+# enumerate
+for i, v in enumerate(["a","b","c"]):
+    print(i, v)    # 0 a / 1 b / 2 c
+
+# zip
+names = ["Kim","Lee","Park"]
+scores = [80, 92, 75]
+for n, s in zip(names, scores):
+    print(f"{n}: {s}")
+
+# map
+strs = ["1","2","3"]
+nums2 = list(map(int, strs))
+print(nums2)  # [1, 2, 3]`,
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 13", title:"문자열",
+  tags:["upper","lower","strip","split","replace","join","startswith","endswith","find","format"],
+  desc:`문자열(str) 관련 주요 메서드입니다. 문자열은 불변이므로 메서드를 호출해도 원본은 변하지 않습니다.`,
+  table:[
+    ["s.upper()", "대문자 변환"],
+    ["s.lower()", "소문자 변환"],
+    ["s.strip()", "앞뒤 공백 제거"],
+    ["s.lstrip() / s.rstrip()", "왼쪽/오른쪽 공백 제거"],
+    ["s.split(sep)", "sep 기준 분리 → 리스트"],
+    ["sep.join(lst)", "리스트를 sep로 합쳐 문자열"],
+    ["s.replace(old, new)", "old를 new로 교체"],
+    ["s.startswith(prefix)", "접두사 확인 → bool"],
+    ["s.endswith(suffix)", "접미사 확인 → bool"],
+    ["s.find(sub)", "sub의 위치 반환 (-1: 없음)"],
+    ["s.count(sub)", "sub의 개수"],
+    ["len(s)", "문자열 길이"],
+    ["s.zfill(n)", "n자리가 되도록 앞에 0 채우기"],
+  ],
+  code:`s = "  Hello, World!  "
+
+print(s.strip())          # "Hello, World!"
+print(s.strip().lower())  # "hello, world!"
+print(s.strip().upper())  # "HELLO, WORLD!"
+print(s.strip().replace("World", "Python"))  # "Hello, Python!"
+
+# split & join
+csv = "Kim,Lee,Park"
+lst = csv.split(",")       # ['Kim', 'Lee', 'Park']
+print("-".join(lst))       # Kim-Lee-Park
+
+# 확인 메서드
+code = "AB-001"
+print(code.startswith("AB"))  # True
+print(code[:2])               # AB
+
+# 포함 여부
+print("World" in "Hello, World!")  # True`,
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 14", title:"반복문",
+  tags:["for","while","break","continue","range","enumerate"],
+  desc:`<b>for</b>는 순서가 있는 컬렉션을 순회할 때, <b>while</b>은 조건이 True인 동안 반복합니다.`,
+  table:[
+    ["for x in iterable:", "iterable을 순회"],
+    ["for i in range(n):", "0부터 n-1까지 반복"],
+    ["while 조건:", "조건이 True인 동안 반복"],
+    ["break", "반복문 즉시 종료"],
+    ["continue", "현재 반복 건너뜀"],
+    ["for ... else:", "break 없이 완료 시 else 실행"],
+  ],
+  code:`# for 반복
+for i in range(5):
+    print(i, end=" ")   # 0 1 2 3 4
+
+# 리스트 순회
+fruits = ["apple","banana","cherry"]
+for fruit in fruits:
+    print(fruit)
+
+# enumerate
+for i, fruit in enumerate(fruits):
+    print(f"{i}: {fruit}")
+
+# while
+cnt = 0
+while cnt < 3:
+    print(cnt)
+    cnt += 1     # 0 1 2
+
+# break / continue
+for i in range(10):
+    if i == 5:
+        break
+    if i % 2 == 0:
+        continue
+    print(i)     # 1 3`,
+  tip:`<b>시험 팁:</b> pandas에서는 반복문보다 벡터 연산(apply, groupby 등)이 훨씬 빠르고 간결합니다.`
+},
+{
+  ch:"ch01", chTitle:"CHAPTER 01 파이썬",
+  num:"SECTION 15", title:"함수",
+  tags:["def","return","매개변수","기본값","lambda","*args","**kwargs"],
+  desc:`함수는 재사용 가능한 코드 블록입니다. <b>def</b>로 정의하고, <b>return</b>으로 값을 반환합니다.`,
+  table:[
+    ["def 함수명(매개변수):", "함수 정의"],
+    ["return 값", "값 반환"],
+    ["def f(x=기본값):", "매개변수 기본값 설정"],
+    ["lambda 매개변수: 표현식", "익명 함수 (한 줄 함수)"],
+  ],
+  code:`# 기본 함수
+def add(a, b):
+    return a + b
+
+print(add(3, 5))   # 8
+
+# 기본값 매개변수
+def greet(name, msg="안녕하세요"):
+    return f"{name}, {msg}"
+
+print(greet("김서원"))          # 김서원, 안녕하세요
+print(greet("이영희", "반갑습니다"))  # 이영희, 반갑습니다
+
+# lambda 함수
+square = lambda x: x ** 2
+print(square(4))   # 16
+
+# pandas apply와 함께 사용
+# df["level"] = df["amount"].apply(lambda x: "high" if x >= 700 else "low")
+
+# 분류 함수 예시 (시험에 자주 나옴)
+def classify(x):
+    if x >= 90:
+        return "A"
+    elif x >= 80:
+        return "B"
+    else:
+        return "C"`,
+  tip:`<b>시험 팁:</b> 단순 조건 분류는 lambda, 복잡한 분기 로직은 def 함수로 만들어 apply()에 사용합니다.`
+},
+
+// ───────────────────────────── CHAPTER 02 판다스 ─────────────────────────────
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 01", title:"데이터프레임과 시리즈",
+  tags:["DataFrame","Series","columns","index","shape","dtypes"],
+  desc:`판다스의 두 핵심 자료구조입니다. <b>Series</b>는 1차원(열 하나), <b>DataFrame</b>은 2차원 표 형태입니다.`,
+  table:[
+    ["pd.Series(리스트)", "시리즈 생성"],
+    ["pd.DataFrame(딕셔너리)", "데이터프레임 생성"],
+    ["df.shape", "행 수, 열 수 (튜플)"],
+    ["df.columns", "컬럼 이름 목록"],
+    ["df.index", "행 인덱스"],
+    ["df.dtypes", "각 컬럼의 자료형"],
+    ["df[\"col\"]", "단일 컬럼 선택 → Series"],
+    ["df[[\"col1\",\"col2\"]]", "여러 컬럼 선택 → DataFrame"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+
+# 시리즈
+s = pd.Series([10, 20, 30], index=["a","b","c"])
+print(s["a"])   # 10
+
+# 데이터프레임
+df = pd.DataFrame({
+    "name": ["Kim","Lee","Park"],
+    "score": [85, 92, 78],
+    "city": ["Seoul","Busan","Daegu"]
+})
+
+print(df.shape)    # (3, 3)
+print(df.columns)  # Index(['name', 'score', 'city'], ...)
+print(df.dtypes)
+
+# 컬럼 선택
+print(df["name"])           # Series
+print(df[["name","score"]]) # DataFrame`,
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 02", title:"데이터 저장 및 불러오기",
+  tags:["read_csv","read_excel","to_csv","to_excel","sep","encoding","index_col"],
+  desc:`CSV/Excel 파일을 불러오거나 저장합니다. 시험에서는 주로 read_csv를 사용합니다.`,
+  table:[
+    ["pd.read_csv(\"파일.csv\")", "CSV 불러오기"],
+    ["pd.read_csv(\"파일.csv\", sep='\\t')", "탭 구분자"],
+    ["pd.read_csv(\"파일.csv\", encoding='cp949')", "한글 인코딩"],
+    ["pd.read_csv(\"파일.csv\", index_col=0)", "첫 번째 컬럼을 인덱스로"],
+    ["pd.read_excel(\"파일.xlsx\")", "엑셀 불러오기"],
+    ["df.to_csv(\"저장.csv\", index=False)", "CSV 저장 (인덱스 제외)"],
+    ["df.to_csv(\"저장.csv\", encoding='utf-8-sig')", "한글 포함 CSV 저장"],
+  ],
+  code:`import pandas as pd
+
+# 시험 환경에서 파일 불러오기
+# df = pd.read_csv("data.csv")
+# df = pd.read_csv("data.csv", encoding="cp949")
+
+# 데이터프레임 저장
+# df.to_csv("result.csv", index=False)
+
+# 시험에서 자주 보이는 패턴
+# X_test = pd.read_csv("X_test.csv")
+# 예측 후 저장
+# result = pd.DataFrame({"id": X_test["id"], "target": pred})
+# result.to_csv("result.csv", index=False)`,
+  tip:`<b>시험 팁:</b> 작업형 2에서는 예측 결과를 <code>to_csv("result.csv", index=False)</code>로 저장하는 것이 기본 패턴입니다.`
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 03", title:"탐색적 데이터 분석(EDA)",
+  tags:["head","tail","info","describe","value_counts","nunique","shape","isnull","sum"],
+  desc:`데이터의 전반적인 구조와 특성을 파악하는 단계입니다.`,
+  table:[
+    ["df.head(n)", "처음 n개 행 (기본 5)"],
+    ["df.tail(n)", "마지막 n개 행"],
+    ["df.info()", "컬럼별 자료형 및 결측치 수"],
+    ["df.describe()", "수치형 컬럼의 기술통계"],
+    ["df[\"col\"].value_counts()", "범주별 개수"],
+    ["df[\"col\"].nunique()", "고유값 개수"],
+    ["df.isnull().sum()", "컬럼별 결측치 수"],
+    ["df.duplicated().sum()", "중복 행 수"],
+    ["df[\"col\"].mean()", "평균"],
+    ["df[\"col\"].median()", "중앙값"],
+    ["df[\"col\"].std()", "표준편차"],
+    ["df[\"col\"].var()", "분산"],
+    ["df[\"col\"].quantile(0.25)", "제1사분위수"],
+  ],
+  code:`# 기본 탐색
+print(df.shape)         # (행 수, 열 수)
+df.head()               # 상위 5개 행
+df.info()               # 컬럼 정보, 결측치 수
+df.describe()           # 기술통계
+
+# 결측치 확인
+print(df.isnull().sum())
+print(df.isnull().sum().sum())  # 전체 결측치 수
+
+# 고유값 확인
+print(df["city"].unique())    # 고유값 배열
+print(df["city"].nunique())   # 고유값 개수
+print(df["city"].value_counts())  # 범주별 빈도
+
+# 기술통계
+print(df["score"].mean())        # 평균
+print(df["score"].median())      # 중앙값
+print(df["score"].std())         # 표준편차
+print(df["score"].quantile(0.75))# 제3사분위수`,
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 04", title:"자료형 변환",
+  tags:["astype","to_numeric","to_datetime","errors='coerce'"],
+  desc:`컬럼의 자료형을 변환합니다. <b>errors='coerce'</b>는 변환 불가 값을 NaN으로 처리합니다.`,
+  table:[
+    ["df[\"col\"].astype(int)", "정수형으로 변환"],
+    ["df[\"col\"].astype(float)", "실수형으로 변환"],
+    ["df[\"col\"].astype(str)", "문자열로 변환"],
+    ["pd.to_numeric(df[\"col\"])", "숫자로 변환"],
+    ["pd.to_numeric(df[\"col\"], errors='coerce')", "변환 불가 → NaN"],
+    ["pd.to_datetime(df[\"col\"])", "날짜/시간으로 변환"],
+    ["df[\"col\"].astype(\"category\")", "범주형으로 변환"],
+  ],
+  code:`import pandas as pd
+
+df = pd.DataFrame({"val": ["10","20","bad","30"]})
+
+# 변환 불가 값 → NaN
+df["num"] = pd.to_numeric(df["val"], errors="coerce")
+print(df)
+#    val   num
+# 0   10  10.0
+# 1   20  20.0
+# 2  bad   NaN
+# 3   30  30.0
+
+# 날짜 변환
+df2 = pd.DataFrame({"date": ["2024-01-01","2024-06-15"]})
+df2["date"] = pd.to_datetime(df2["date"])
+print(df2.dtypes)  # date    datetime64[ns]
+
+# astype
+df["num"] = df["num"].astype(float)`,
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 05", title:"새로운 컬럼 추가",
+  tags:["파생변수","assign","apply","np.where","cut","qcut"],
+  desc:`기존 컬럼을 이용해 새로운 파생변수(컬럼)를 추가합니다.`,
+  table:[
+    ["df[\"new\"] = 표현식", "새 컬럼 추가 (기본)"],
+    ["df[\"new\"] = df[\"a\"] + df[\"b\"]", "컬럼 간 연산"],
+    ["df[\"new\"] = df[\"col\"].apply(func)", "함수 적용"],
+    ["df[\"new\"] = np.where(조건, 참, 거짓)", "조건부 값 할당"],
+    ["pd.cut(df[\"col\"], bins)", "구간 분할"],
+    ["pd.qcut(df[\"col\"], q)", "분위수 기반 분할"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({"price": [1000,2000,3000], "qty": [2,3,1]})
+
+# 기본 파생변수
+df["total"] = df["price"] * df["qty"]
+
+# apply로 함수 적용
+df["level"] = df["total"].apply(lambda x: "high" if x >= 5000 else "low")
+
+# np.where (간결한 조건부 할당)
+df["flag"] = np.where(df["total"] >= 5000, 1, 0)
+
+# pd.cut (구간 분할)
+df["score"] = [45, 72, 88]
+df["grade"] = pd.cut(df["score"],
+                     bins=[0,60,80,100],
+                     labels=["C","B","A"])
+print(df)`,
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 06", title:"데이터 삭제",
+  tags:["drop","del","dropna","drop_duplicates"],
+  desc:`행이나 열을 삭제합니다.`,
+  table:[
+    ["df.drop(columns=[\"col\"])", "열 삭제"],
+    ["df.drop([\"col1\",\"col2\"], axis=1)", "여러 열 삭제 (axis=1)"],
+    ["df.drop([0,1], axis=0)", "행 삭제 (인덱스 기준)"],
+    ["df.dropna()", "결측치 있는 행 모두 삭제"],
+    ["df.dropna(subset=[\"col\"])", "특정 컬럼 결측치 있는 행 삭제"],
+    ["df.drop_duplicates()", "중복 행 제거"],
+    ["df.drop_duplicates(subset=[\"id\"])", "특정 컬럼 기준 중복 제거"],
+    ["df.reset_index(drop=True)", "인덱스 재설정"],
+  ],
+  code:`import pandas as pd
+
+df = pd.DataFrame({
+    "id": [1,2,2,3],
+    "name": ["Kim","Lee","Lee","Park"],
+    "score": [80, None, 92, 75]
+})
+
+# 열 삭제
+df2 = df.drop(columns=["name"])
+
+# 행 삭제
+df3 = df.drop([0,1], axis=0)
+
+# 결측치 있는 행 삭제
+df4 = df.dropna(subset=["score"])
+
+# 중복 제거 (id 기준)
+df5 = df.drop_duplicates(subset=["id"])
+df5 = df5.reset_index(drop=True)
+print(df5)`,
+  tip:`<b>시험 팁:</b> drop, dropna, drop_duplicates 모두 기본적으로 원본을 변경하지 않습니다. 결과를 변수에 저장하거나 <code>inplace=True</code>를 사용하세요.`
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 07", title:"인덱싱/슬라이싱(loc)",
+  tags:["loc","라벨 기반","조건 필터링","set_index"],
+  desc:`<b>loc</b>는 <b>라벨(이름) 기반</b> 인덱싱입니다. 행/열 이름으로 데이터를 선택합니다.`,
+  table:[
+    ["df.loc[행라벨, 열라벨]", "행/열 이름으로 선택"],
+    ["df.loc[0:3]", "인덱스 0~3 행 선택 (3 포함)"],
+    ["df.loc[조건]", "조건 필터링"],
+    ["df.loc[조건, \"col\"]", "조건 만족 행의 특정 열"],
+    ["df.set_index(\"col\")", "특정 컬럼을 인덱스로 설정"],
+  ],
+  code:`import pandas as pd
+
+df = pd.DataFrame({
+    "city": ["Seoul","Busan","Seoul","Daegu"],
+    "amount": [500,300,800,200],
+    "score": [80,70,90,60]
+}, index=["a","b","c","d"])
+
+# 라벨로 선택
+print(df.loc["a"])              # a행
+print(df.loc["a":"c"])          # a~c행 (c 포함!)
+print(df.loc["a", "amount"])    # 500
+
+# 조건 필터링
+cond = df["amount"] >= 500
+print(df.loc[cond])
+
+# 조건 + 특정 열
+print(df.loc[df["city"] == "Seoul", "amount"])
+
+# 값 변경
+df.loc[df["score"] < 70, "score"] = 70`,
+  warn:`<b>주의:</b> loc의 슬라이싱(<code>loc["a":"c"]</code>)은 끝 라벨을 <b>포함</b>합니다. iloc와 다르게 동작합니다.`
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 08", title:"인덱싱/슬라이싱(iloc)",
+  tags:["iloc","위치 기반","정수 인덱스"],
+  desc:`<b>iloc</b>는 <b>위치(정수) 기반</b> 인덱싱입니다. 0부터 시작하는 정수 위치로 선택합니다.`,
+  table:[
+    ["df.iloc[0]", "첫 번째 행"],
+    ["df.iloc[-1]", "마지막 행"],
+    ["df.iloc[0:3]", "0~2번째 행 (3 미포함)"],
+    ["df.iloc[:, 0]", "첫 번째 열"],
+    ["df.iloc[0:3, 1:3]", "0~2행, 1~2열"],
+    ["df.iloc[[0,2,4]]", "특정 위치 행들"],
+  ],
+  code:`import pandas as pd
+
+df = pd.DataFrame({
+    "name": ["Kim","Lee","Park","Choi"],
+    "score": [80,92,75,88]
+})
+
+print(df.iloc[0])       # 첫 번째 행
+print(df.iloc[-1])      # 마지막 행
+print(df.iloc[1:3])     # 1,2번째 행
+print(df.iloc[:, 0])    # 첫 번째 열 (name)
+print(df.iloc[0, 1])    # 0번째 행, 1번째 열 → 80
+
+# 정렬 후 5번째 행의 값
+df_sorted = df.sort_values("score", ascending=False)
+ans = df_sorted.iloc[4]["name"]  # 5번째 행`,
+  tip:`<b>loc vs iloc:</b> loc는 이름 기반(끝 포함), iloc는 위치 기반(끝 미포함). 시험에서는 주로 iloc[n]으로 n+1번째 행을 선택합니다.`
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 09", title:"데이터 추가/변경",
+  tags:["fillna","replace","where","mask","astype","loc 값 변경"],
+  desc:`데이터프레임의 값을 추가하거나 변경합니다.`,
+  table:[
+    ["df[\"col\"].fillna(값)", "결측치를 특정 값으로 채우기"],
+    ["df[\"col\"].fillna(df[\"col\"].mean())", "결측치를 평균으로 채우기"],
+    ["df[\"col\"].fillna(method='ffill')", "앞의 값으로 채우기 (forward fill)"],
+    ["df[\"col\"].bfill()", "뒤의 값으로 채우기 (back fill)"],
+    ["df[\"col\"].replace(old, new)", "특정 값 교체"],
+    ["df.loc[조건, \"col\"] = 값", "조건에 맞는 셀 값 변경"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({
+    "city": [None,"Seoul","Busan",None],
+    "score": [80.0, None, 75.0, 90.0]
+})
+
+# 결측치 채우기
+df["city"] = df["city"].fillna("Unknown")
+df["score"] = df["score"].fillna(df["score"].mean())
+
+# 값 교체
+df2 = pd.DataFrame({"grade": ["A","B","C","A"]})
+df2["grade"] = df2["grade"].replace("A", "우수")
+
+# 조건부 값 변경
+df.loc[df["score"] < 80, "score"] = 80
+print(df)`,
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 10", title:"정렬",
+  tags:["sort_values","sort_index","ascending","nlargest","nsmallest"],
+  desc:`행 또는 인덱스 기준으로 정렬합니다.`,
+  table:[
+    ["df.sort_values(\"col\")", "오름차순 정렬"],
+    ["df.sort_values(\"col\", ascending=False)", "내림차순 정렬"],
+    ["df.sort_values([\"col1\",\"col2\"])", "여러 컬럼 기준 정렬"],
+    ["df.sort_index()", "인덱스 기준 정렬"],
+    ["df.nlargest(n, \"col\")", "상위 n개 행 선택"],
+    ["df.nsmallest(n, \"col\")", "하위 n개 행 선택"],
+  ],
+  code:`import pandas as pd
+
+df = pd.DataFrame({
+    "name": ["Kim","Lee","Park","Choi"],
+    "score": [80,92,75,88],
+    "amount": [500,300,800,200]
+})
+
+# 오름차순 정렬
+df_asc = df.sort_values("score")
+print(df_asc)
+
+# 내림차순 정렬
+df_desc = df.sort_values("score", ascending=False)
+
+# 정렬 후 인덱스로 접근
+ans = df_desc.iloc[0]["name"]  # 1등 이름
+
+# nlargest
+top3 = df.nlargest(3, "score")
+
+# 여러 컬럼 기준 정렬
+df_multi = df.sort_values(["score","amount"], ascending=[False, True])`,
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 11", title:"필터링",
+  tags:["불리언 마스크","isin","between","query","&","|","~"],
+  desc:`조건에 맞는 행만 선택합니다. 여러 조건은 <b>&amp;</b>(AND), <b>|</b>(OR), <b>~</b>(NOT)로 연결합니다.`,
+  table:[
+    ["df[조건]", "조건 필터링"],
+    ["df[df[\"col\"] > 값]", "단일 조건"],
+    ["df[(조건1) & (조건2)]", "AND 조건"],
+    ["df[(조건1) | (조건2)]", "OR 조건"],
+    ["df[~조건]", "NOT 조건"],
+    ["df[\"col\"].isin([a,b])", "값 목록 포함 여부"],
+    ["df[\"col\"].between(a,b)", "a 이상 b 이하"],
+    ["df[\"col\"].notna()", "결측치가 아닌 행"],
+    ["df[\"col\"].isna()", "결측치인 행"],
+  ],
+  code:`import pandas as pd
+
+df = pd.DataFrame({
+    "city": ["Seoul","Busan","Seoul","Daegu","Incheon"],
+    "amount": [500,300,800,200,600],
+    "score": [80,None,90,75,85]
+})
+
+# 단일 조건
+high = df[df["amount"] >= 500]
+
+# AND 조건 (괄호 필수!)
+cond = (df["city"] == "Seoul") & (df["amount"] >= 500)
+print(df[cond])
+
+# OR 조건
+df_sb = df[df["city"].isin(["Seoul","Busan"])]
+
+# 결측치 제외
+df_clean = df[df["score"].notna()]
+
+# between
+df_mid = df[df["amount"].between(300, 600)]
+
+# NOT
+df_not_seoul = df[~(df["city"] == "Seoul")]`,
+  warn:`<b>주의:</b> <code>df[df["a"] > 1 and df["b"] > 2]</code> 는 오류! 반드시 <code>(조건1) &amp; (조건2)</code> 형태로 작성하세요.`
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 12", title:"결측치 처리",
+  tags:["isnull","notnull","fillna","dropna","ffill","bfill","interpolate"],
+  desc:`결측치(NaN)를 찾고, 채우거나 제거합니다.`,
+  table:[
+    ["df.isnull()", "결측치 여부 (True/False)"],
+    ["df.isnull().sum()", "컬럼별 결측치 수"],
+    ["df.notnull()", "결측치가 아닌 여부"],
+    ["df.dropna()", "결측치 있는 행 삭제"],
+    ["df.dropna(subset=[\"col\"])", "특정 컬럼 기준으로만 삭제"],
+    ["df[\"col\"].fillna(값)", "특정 값으로 채우기"],
+    ["df[\"col\"].fillna(df[\"col\"].mean())", "평균으로 채우기"],
+    ["df[\"col\"].fillna(df[\"col\"].mode()[0])", "최빈값으로 채우기"],
+    ["df[\"col\"].ffill()", "앞 값으로 채우기"],
+    ["df[\"col\"].bfill()", "뒤 값으로 채우기"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({
+    "name": ["Kim","Lee",None,"Choi"],
+    "score": [80.0, None, 75.0, 90.0],
+    "city": [None,"Seoul","Busan",None]
+})
+
+# 결측치 수 확인
+print(df.isnull().sum())
+
+# 삭제
+df_drop = df.dropna(subset=["score"])
+
+# 채우기
+df2 = df.copy()
+df2["score"] = df2["score"].fillna(df2["score"].mean())
+df2["city"] = df2["city"].fillna(df2["city"].mode()[0])
+df2["name"] = df2["name"].bfill()   # 뒤 값으로
+
+print(df2)`,
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 13", title:"값 변경",
+  tags:["replace","map","apply","where","mask","clip"],
+  desc:`기존 값을 다른 값으로 변경하는 다양한 방법입니다.`,
+  table:[
+    ["df[\"col\"].replace(old, new)", "단일 값 교체"],
+    ["df[\"col\"].replace({a:x, b:y})", "딕셔너리로 여러 값 교체"],
+    ["df[\"col\"].map({a:x, b:y})", "딕셔너리 매핑 (없는 값 → NaN)"],
+    ["df[\"col\"].apply(func)", "함수 적용"],
+    ["np.where(조건, 참, 거짓)", "조건부 값 교체"],
+    ["df[\"col\"].clip(lower, upper)", "최솟값/최댓값으로 범위 제한"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({
+    "grade": ["A","B","C","A","B"],
+    "score": [95, 75, 50, 88, 65]
+})
+
+# replace
+df["grade"] = df["grade"].replace({"A":"우수","B":"보통","C":"미흡"})
+
+# map (딕셔너리 매핑)
+mapping = {"우수":3, "보통":2, "미흡":1}
+df["grade_num"] = df["grade"].map(mapping)
+
+# apply (함수 적용)
+df["pass"] = df["score"].apply(lambda x: "합격" if x >= 70 else "불합격")
+
+# np.where
+df["high"] = np.where(df["score"] >= 80, 1, 0)
+
+# clip (이상치 제한)
+df["score_clip"] = df["score"].clip(lower=60, upper=90)
+print(df)`,
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 14", title:"문자열",
+  tags:["str 접근자","str.contains","str.startswith","str.replace","str.split","str.upper","str.len"],
+  desc:`문자열 컬럼은 <b>.str</b> 접근자를 통해 다양한 문자열 메서드를 적용할 수 있습니다.`,
+  table:[
+    ["df[\"col\"].str.upper()", "대문자 변환"],
+    ["df[\"col\"].str.lower()", "소문자 변환"],
+    ["df[\"col\"].str.strip()", "앞뒤 공백 제거"],
+    ["df[\"col\"].str[:n]", "앞 n글자 추출"],
+    ["df[\"col\"].str[-n:]", "뒤 n글자 추출"],
+    ["df[\"col\"].str.contains(\"패턴\")", "포함 여부 → bool"],
+    ["df[\"col\"].str.startswith(\"prefix\")", "접두사 확인"],
+    ["df[\"col\"].str.replace(old, new)", "교체"],
+    ["df[\"col\"].str.split(\",\")", "분리 → 리스트"],
+    ["df[\"col\"].str.len()", "문자열 길이"],
+  ],
+  code:`import pandas as pd
+
+df = pd.DataFrame({
+    "code": ["AB-001","CD-203","EF-101","GH-404"],
+    "city": ["  Seoul  ","Busan","  Daegu","Incheon  "]
+})
+
+# 앞 2글자 추출 (파생변수)
+df["prefix"] = df["code"].str[:2]
+
+# 뒤 3글자 추출
+df["suffix"] = df["code"].str[-3:]
+
+# 공백 제거
+df["city"] = df["city"].str.strip()
+
+# 포함 여부 필터링
+mask = df["code"].str.contains("0")
+print(df[mask])
+
+# 대문자 변환
+df["city_upper"] = df["city"].str.upper()
+
+# 조건: 앞 2글자가 "AB" 또는 "EF"인 행
+cond = df["prefix"].isin(["AB","EF"])
+print(df[cond])`,
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 15", title:"내장 함수",
+  tags:["apply","map","agg","transform","pipe","cumsum","rank"],
+  desc:`판다스 내장 함수와 apply/agg 등 고급 함수 활용 방법입니다.`,
+  table:[
+    ["df[\"col\"].apply(func)", "각 원소에 함수 적용"],
+    ["df.apply(func, axis=1)", "행 단위로 함수 적용"],
+    ["df.apply(func, axis=0)", "열 단위로 함수 적용"],
+    ["df[\"col\"].agg([\"mean\",\"std\"])", "여러 집계 함수 한 번에"],
+    ["df[\"col\"].cumsum()", "누적 합계"],
+    ["df[\"col\"].rank()", "순위 (1부터)"],
+    ["df[[\"a\",\"b\"]].sum(axis=1)", "행 단위 합계"],
+    ["df[[\"a\",\"b\"]].mean(axis=1)", "행 단위 평균"],
+  ],
+  code:`import pandas as pd
+
+df = pd.DataFrame({
+    "val1": [10, 20, 30],
+    "val2": [40, 50, 60],
+    "val3": [70, 80, 90]
+})
+
+# 행 단위 합계, 평균
+df["row_sum"] = df[["val1","val2","val3"]].sum(axis=1)
+df["row_mean"] = df[["val1","val2","val3"]].mean(axis=1)
+
+# 조건 함수 apply
+def classify(x):
+    return "high" if x >= 150 else "low"
+df["level"] = df["row_sum"].apply(classify)
+
+# 최댓값 위치 찾기
+idx = df["row_mean"].idxmax()
+print(df.loc[idx])  # row_mean이 가장 큰 행
+
+# 여러 집계
+print(df["val1"].agg(["mean","std","min","max"]))`,
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 16", title:"그룹핑",
+  tags:["groupby","agg","transform","size","idxmax","pivot"],
+  desc:`<b>groupby()</b>는 특정 컬럼(범주)별로 데이터를 묶어 집계합니다.`,
+  table:[
+    ["df.groupby(\"col\")[\"target\"].mean()", "범주별 평균"],
+    ["df.groupby(\"col\")[\"target\"].sum()", "범주별 합계"],
+    ["df.groupby(\"col\")[\"target\"].max()", "범주별 최댓값"],
+    ["df.groupby(\"col\")[\"target\"].min()", "범주별 최솟값"],
+    ["df.groupby(\"col\")[\"target\"].count()", "범주별 개수"],
+    ["df.groupby(\"col\").size()", "범주별 행 개수 (결측치 포함)"],
+    ["df.groupby(\"col\")[\"target\"].agg([...])", "여러 집계"],
+    [".idxmax()", "최댓값의 인덱스(라벨) 반환"],
+    [".idxmin()", "최솟값의 인덱스 반환"],
+  ],
+  code:`import pandas as pd
+
+df = pd.DataFrame({
+    "city": ["Seoul","Busan","Seoul","Daegu","Busan"],
+    "category": ["A","B","A","C","A"],
+    "amount": [500,300,800,200,600]
+})
+
+# 기본 그룹핑
+city_sum = df.groupby("city")["amount"].sum()
+print(city_sum)
+
+# 가장 큰 city
+ans = city_sum.idxmax()
+print(ans)  # Seoul
+
+# 여러 집계
+stats = df.groupby("city")["amount"].agg(["mean","sum","count"])
+print(stats)
+
+# 다중 그룹
+multi = df.groupby(["city","category"])["amount"].sum()
+
+# 그룹별 순위 (transform: 원본 df 크기 유지)
+df["rank"] = df.groupby("city")["amount"].rank(ascending=False)`,
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 17", title:"시계열 데이터(datetime)",
+  tags:["to_datetime","dt.year","dt.month","dt.day","dt.weekday","dt.hour","strftime"],
+  desc:`날짜/시간 데이터를 다루는 방법입니다. <b>pd.to_datetime()</b>으로 변환 후 <b>.dt</b> 접근자를 사용합니다.`,
+  table:[
+    ["pd.to_datetime(df[\"col\"])", "문자열 → 날짜 변환"],
+    ["df[\"col\"].dt.year", "연도 추출"],
+    ["df[\"col\"].dt.month", "월 추출"],
+    ["df[\"col\"].dt.day", "일 추출"],
+    ["df[\"col\"].dt.hour", "시간 추출"],
+    ["df[\"col\"].dt.minute", "분 추출"],
+    ["df[\"col\"].dt.weekday", "요일 (0=월 ~ 6=일)"],
+    ["df[\"col\"].dt.day_name()", "요일 이름 (Monday...)"],
+    ["df[\"col\"].dt.strftime(\"%Y-%m\")", "원하는 형식 문자열로 변환"],
+    ["df[\"col\"].dt.quarter", "분기 (1~4)"],
+  ],
+  code:`import pandas as pd
+
+df = pd.DataFrame({
+    "date": pd.date_range("2024-01-01", periods=5, freq="30D")
+})
+
+# 날짜 정보 추출
+df["year"] = df["date"].dt.year
+df["month"] = df["date"].dt.month
+df["day"] = df["date"].dt.day
+df["weekday"] = df["date"].dt.weekday  # 0=월
+
+# 주말 여부
+df["is_weekend"] = df["date"].dt.weekday >= 5
+
+# 문자열 변환
+df["ym"] = df["date"].dt.strftime("%Y-%m")
+
+# 필터링: 2024년 6월 이후
+cond = df["date"] >= "2024-06-01"
+print(df[cond])
+
+# 월별 집계
+import numpy as np
+df["amount"] = np.random.randint(100,1000,5)
+ans = df.groupby("month")["amount"].sum().idxmax()
+print(f"가장 많은 달: {ans}월")`,
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 18", title:"시계열 데이터(Timedelta)",
+  tags:["Timedelta","total_seconds","dt.days","시간 차이"],
+  desc:`두 날짜/시간의 차이를 계산합니다. 결과는 <b>Timedelta</b>이며, <b>.dt.total_seconds()</b>로 초 단위로 변환합니다.`,
+  table:[
+    ["end - start", "시간 차이 → Timedelta"],
+    [".dt.total_seconds()", "총 초 단위로 변환"],
+    [".dt.total_seconds() / 60", "분 단위로 변환"],
+    [".dt.total_seconds() / 3600", "시간 단위로 변환"],
+    [".dt.days", "일 단위 (Timedelta → 일수)"],
+    ["pd.to_timedelta(n, unit='m')", "숫자 → Timedelta 변환"],
+    ["(max - min).days", "날짜 차이 일수"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+
+n = 10
+start = pd.date_range("2024-01-01 08:00", periods=n, freq="3H")
+end = start + pd.to_timedelta(np.random.randint(10,180,n), unit="m")
+
+df = pd.DataFrame({"start": start, "end": end})
+
+# 시간 차이 (분 단위)
+df["duration_min"] = (df["end"] - df["start"]).dt.total_seconds() / 60
+
+# 90분 이상인 행
+ans = (df["duration_min"] >= 90).sum()
+print(f"90분 이상: {ans}개")
+
+# 비율
+ratio = (df["duration_min"] < 60).mean()
+print(f"60분 미만 비율: {ratio:.2%}")
+
+# 날짜 차이 일수
+dates = pd.to_datetime(["2024-01-01","2024-12-31"])
+days_diff = (dates.max() - dates.min()).days
+print(f"날짜 차이: {days_diff}일")`,
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 19", title:"데이터프레임 합치기",
+  tags:["concat","merge","join","how","on","axis"],
+  desc:`두 개 이상의 데이터프레임을 합치는 방법입니다. <b>concat</b>은 단순 연결, <b>merge</b>는 키 기반 결합입니다.`,
+  table:[
+    ["pd.concat([df1,df2])", "행 방향 연결 (위아래)"],
+    ["pd.concat([df1,df2], axis=1)", "열 방향 연결 (좌우)"],
+    ["pd.concat([...], ignore_index=True)", "인덱스 재설정"],
+    ["pd.merge(left, right, on=\"key\")", "inner join (기본)"],
+    ["pd.merge(left, right, on=\"key\", how=\"left\")", "left join"],
+    ["pd.merge(left, right, on=\"key\", how=\"outer\")", "outer join"],
+    ["df1.join(df2)", "인덱스 기준 결합"],
+  ],
+  code:`import pandas as pd
+
+# concat (행 방향)
+df_a = pd.DataFrame({"id":[1,2],"score":[80,90]})
+df_b = pd.DataFrame({"id":[3,4],"score":[75,85]})
+
+combined = pd.concat([df_a, df_b], ignore_index=True)
+print(combined)
+
+# merge (inner join 기본)
+left = pd.DataFrame({"id":[1,2,3],"amount":[500,300,800]})
+right = pd.DataFrame({"id":[1,2,3],"grade":["Gold","Silver","Bronze"]})
+
+merged = pd.merge(left, right, on="id")
+print(merged)
+
+# left join
+right2 = pd.DataFrame({"id":[1,2],"grade":["Gold","Silver"]})
+left_merged = pd.merge(left, right2, on="id", how="left")
+print(left_merged)  # id=3은 grade=NaN`,
+  tip:`<b>concat vs merge:</b> 같은 구조의 데이터를 단순히 이어붙일 때는 concat, 공통 키로 두 테이블을 연결할 때는 merge를 사용합니다.`
+},
+{
+  ch:"ch02", chTitle:"CHAPTER 02 판다스",
+  num:"SECTION 20", title:"피벗테이블",
+  tags:["pivot_table","pivot","unstack","melt","aggfunc"],
+  desc:`데이터를 행/열 기준으로 재구조화하며 집계합니다. SQL의 PIVOT과 유사합니다.`,
+  table:[
+    ["pd.pivot_table(df, index, columns, values, aggfunc)", "피벗테이블 생성"],
+    ["aggfunc='mean'", "집계 함수: 평균 (기본값)"],
+    ["aggfunc='sum'", "집계 함수: 합계"],
+    ["aggfunc='count'", "집계 함수: 개수"],
+    ["fill_value=0", "결측치를 0으로 채우기"],
+    ["df.pivot(index, columns, values)", "고유값 보장 시 사용 (단순 재구조화)"],
+    ["pd.melt(df, id_vars, value_vars)", "와이드 → 롱 형식 변환 (피벗 역변환)"],
+  ],
+  code:`import pandas as pd
+import numpy as np
+
+df = pd.DataFrame({
+    "city": ["Seoul","Seoul","Busan","Busan","Daegu"],
+    "category": ["A","B","A","B","A"],
+    "amount": [500,300,800,200,600]
+})
+
+# 기본 피벗테이블 (city × category의 amount 평균)
+pv = pd.pivot_table(df,
+                    index="city",
+                    columns="category",
+                    values="amount",
+                    aggfunc="mean")
+print(pv)
+
+# 결측치 개수
+print(pv.isna().sum().sum())
+
+# 합계 피벗테이블
+pv_sum = pd.pivot_table(df,
+                        index="city",
+                        columns="category",
+                        values="amount",
+                        aggfunc="sum",
+                        fill_value=0)
+print(pv_sum)
+
+# 피벗테이블에서 최댓값 위치 찾기
+print(pv_sum.stack().idxmax())  # ('city', 'category')`,
+},
+];
+
+function esc(s){
+  return String(s||"").replace(/[&<>"']/g, m=>
+    ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])
+  );
+}
+
+function render(){
+  const kw = document.getElementById("search").value.toLowerCase();
+  const ch = document.querySelector(".ch-btn.active").dataset.ch;
+  const container = document.getElementById("content");
+  container.innerHTML = "";
+
+  const filtered = sections.filter(s => {
+    const matchCh = !ch || s.ch === ch;
+    const matchKw = !kw ||
+      (s.num+s.title+s.tags.join(" ")+s.desc+(s.tip||"")+(s.warn||"")).toLowerCase().includes(kw);
+    return matchCh && matchKw;
+  });
+
+  if(filtered.length === 0){
+    container.innerHTML = `<div class="empty">검색 결과가 없습니다.</div>`;
+    return;
+  }
+
+  // 챕터 그룹핑
+  const groups = {};
+  filtered.forEach(s => {
+    if(!groups[s.ch]) groups[s.ch] = {title: s.chTitle, items: []};
+    groups[s.ch].items.push(s);
+  });
+
+  Object.values(groups).forEach(g => {
+    const block = document.createElement("div");
+    block.className = "chapter-block";
+    block.innerHTML = `<div class="chapter-title">${esc(g.title)}</div>`;
+
+    g.items.forEach(sec => {
+      const card = document.createElement("div");
+      card.className = "section-card";
+
+      const tagHtml = sec.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("");
+      const tipHtml = sec.tip ? `<div class="tip">${sec.tip}</div>` : "";
+      const warnHtml = sec.warn ? `<div class="warn">${sec.warn}</div>` : "";
+
+      let tableHtml = "";
+      if(sec.table && sec.table.length){
+        tableHtml = `<table class="key-table"><tr><th>문법 / 메서드</th><th>설명</th></tr>` +
+          sec.table.map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join("") +
+          `</table>`;
+      }
+
+      card.innerHTML = `
+        <div class="sec-header" onclick="toggleSec(this)">
+          <span class="sec-num">${esc(sec.num)}</span>
+          <span class="sec-title">${esc(sec.title)}</span>
+          <span class="sec-arrow">▼</span>
+        </div>
+        <div class="sec-body">
+          <div class="theory-section">
+            <h4>핵심 개념</h4>
+            <p class="desc">${sec.desc}</p>
+            <div class="tag-row">${tagHtml}</div>
+            ${tableHtml}
+            ${tipHtml}
+            ${warnHtml}
+            <h4>코드 예제</h4>
+            <pre><code>${esc(sec.code)}</code></pre>
+          </div>
+        </div>`;
+      block.appendChild(card);
+    });
+    container.appendChild(block);
+  });
+}
+
+function toggleSec(header){
+  header.classList.toggle("open");
+  const body = header.nextElementSibling;
+  body.classList.toggle("open");
+}
+
+document.querySelectorAll(".ch-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".ch-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    render();
+  });
+});
+document.getElementById("search").addEventListener("input", render);
+
+render();
+</script>
+</body>
+</html>
