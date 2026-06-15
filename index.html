@@ -62,6 +62,7 @@
   .theory-text{margin-top:8px;line-height:1.75;font-size:13px;color:#334155}
   .theory-text b{color:#111827}
   .count-badge{font-size:12px;color:#94a3b8;margin-left:auto}
+  .chapter-head{font-size:17px;font-weight:800;color:#0f172a;padding:13px 18px;background:white;border-left:5px solid #6366f1;border-radius:0 12px 12px 0;margin:24px 0 8px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
   .empty{text-align:center;color:#94a3b8;padding:60px 0;font-size:15px}
 </style>
 </head>
@@ -457,6 +458,160 @@ ans = merged.loc[merged["grade"] == "Gold", "amount"].mean()
 print(ans)`
 },
 
+// ── CHAPTER 01 머신러닝 기초 ──
+{
+part:"작업형2", sec:"CH01-01", title:"지도학습 / 비지도학습 판별",
+q:"iris 데이터를 불러와 target이 있는지 확인하고, 지도학습이면 '지도학습' 문자열을 ans에 저장하시오.",
+a:`from sklearn.datasets import load_iris
+
+data = load_iris(as_frame=True)
+X = data.data
+y = data.target
+
+ans = "지도학습" if y is not None else "비지도학습"
+print(ans)`
+},
+{
+part:"작업형2", sec:"CH01-02", title:"분류 / 회귀 판별",
+q:"iris target의 고유값 개수를 확인하여 분류 문제인지 회귀 문제인지 판별하고, 결과 문자열을 ans에 저장하시오. (고유값 20개 미만이면 분류)",
+a:`from sklearn.datasets import load_iris
+
+data = load_iris(as_frame=True)
+y = data.target
+
+ans = "분류" if y.nunique() < 20 else "회귀"
+print(ans)`
+},
+
+// ── CHAPTER 02 머신러닝 실습(분류) ──
+{
+part:"작업형2", sec:"CH02-06", title:"분류 모델 학습 및 평가 (전체 과정)",
+q:"breast_cancer 데이터로 RandomForestClassifier를 학습하고 검증 데이터의 ROC-AUC를 ans에 저장하시오.",
+a:`from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_auc_score
+
+data = load_breast_cancer(as_frame=True)
+X_train, X_val, y_train, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42, stratify=data.target
+)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict_proba(X_val)[:, 1]
+
+ans = roc_auc_score(y_val, pred)
+print(round(ans, 4))`
+},
+
+// ── CHAPTER 03 머신러닝 평가지표 ──
+{
+part:"작업형2", sec:"CH03-01", title:"이진 분류 평가지표",
+q:"breast_cancer 데이터로 분류 모델을 학습하고 검증 데이터의 F1-score를 ans에 저장하시오.",
+a:`from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
+
+data = load_breast_cancer(as_frame=True)
+X_train, X_val, y_train, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42, stratify=data.target
+)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict(X_val)
+
+ans = f1_score(y_val, pred)
+print(round(ans, 4))`
+},
+{
+part:"작업형2", sec:"CH03-02", title:"다중 분류 평가지표",
+q:"wine 데이터로 다중 분류 모델을 학습하고 검증 데이터의 macro F1-score를 ans에 저장하시오.",
+a:`from sklearn.datasets import load_wine
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
+
+data = load_wine(as_frame=True)
+X_train, X_val, y_train, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42, stratify=data.target
+)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict(X_val)
+
+ans = f1_score(y_val, pred, average="macro")
+print(round(ans, 4))`
+},
+{
+part:"작업형2", sec:"CH03-03", title:"회귀 평가지표",
+q:"diabetes 데이터로 회귀 모델을 학습하고 RMSE를 ans에 저장하시오.",
+a:`import numpy as np
+from sklearn.datasets import load_diabetes
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+
+data = load_diabetes(as_frame=True)
+X_train, X_val, y_train, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42)
+
+model = RandomForestRegressor(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict(X_val)
+
+ans = np.sqrt(mean_squared_error(y_val, pred))
+print(round(ans, 4))`
+},
+
+// ── CHAPTER 04 머신러닝 실습(회귀) ──
+{
+part:"작업형2", sec:"CH04-06", title:"회귀 모델 학습 및 평가 (전체 과정)",
+q:"diabetes 데이터로 RandomForestRegressor를 학습하고 검증 데이터의 RMSE를 ans에 저장하시오.",
+a:`import numpy as np
+from sklearn.datasets import load_diabetes
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+
+data = load_diabetes(as_frame=True)
+X_train, X_val, y_train, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42)
+
+model = RandomForestRegressor(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict(X_val)
+
+ans = np.sqrt(mean_squared_error(y_val, pred))
+print(round(ans, 4))`
+},
+
+// ── CHAPTER 05 머신러닝 실습(다중분류) ──
+{
+part:"작업형2", sec:"CH05-06", title:"다중 분류 모델 학습 및 평가 (전체 과정)",
+q:"wine 데이터로 RandomForestClassifier를 학습하고 검증 데이터의 macro F1-score를 ans에 저장하시오.",
+a:`from sklearn.datasets import load_wine
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
+
+data = load_wine(as_frame=True)
+X_train, X_val, y_train, y_val = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42, stratify=data.target
+)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+pred = model.predict(X_val)
+
+ans = f1_score(y_val, pred, average="macro")
+print(round(ans, 4))`
+},
+
+// ── CHAPTER 06 이진 분류 연습문제 ──
 {
 part:"작업형2", sec:"CH06-01", title:"환자의 당뇨병 여부 예측",
 q:"Pima Indians 당뇨병 데이터를 이용해 당뇨병 여부(Outcome)를 예측하시오. RandomForestClassifier로 학습 후 검증 데이터의 ROC-AUC를 ans에 저장하시오.",
@@ -780,8 +935,9 @@ ans = np.sqrt(mean_squared_error(y_val, pred))
 print(round(ans, 2))`
 },
 
+// ── CHAPTER 01 가설검정 ──
 {
-part:"작업형3", sec:"CH06-01", title:"단일 표본 검정",
+part:"작업형3", sec:"CH01-01", title:"단일 표본 검정",
 q:"표본 평균이 기준값 70과 다른지 단일표본 t검정을 수행하고 p-value를 ans에 저장하시오.",
 a:`import numpy as np
 from scipy.stats import ttest_1samp
@@ -794,7 +950,7 @@ ans = p
 print(ans)`
 },
 {
-part:"작업형3", sec:"CH06-03", title:"대응 표본 검정",
+part:"작업형3", sec:"CH01-02", title:"대응 표본 검정",
 q:"학습 전후 점수 차이가 있는지 대응표본 t검정을 수행하고 p-value를 ans에 저장하시오.",
 a:`import numpy as np
 from scipy.stats import ttest_rel
@@ -808,7 +964,7 @@ ans = p
 print(ans)`
 },
 {
-part:"작업형3", sec:"CH06-02", title:"독립 표본 검정",
+part:"작업형3", sec:"CH01-03", title:"독립 표본 검정",
 q:"A반과 B반 평균 점수 차이가 있는지 독립표본 t검정을 수행하고 p-value를 ans에 저장하시오.",
 a:`import numpy as np
 from scipy.stats import ttest_ind
@@ -821,8 +977,25 @@ stat, p = ttest_ind(a, b, equal_var=False)
 ans = p
 print(ans)`
 },
+
+// ── CHAPTER 02 분산 분석 ──
 {
-part:"작업형3", sec:"CH06-05", title:"이원 분산 분석",
+part:"작업형3", sec:"CH02-01", title:"일원 분산 분석",
+q:"세 그룹 평균 차이가 있는지 일원분산분석을 수행하고 p-value를 ans에 저장하시오.",
+a:`import numpy as np
+from scipy.stats import f_oneway
+
+np.random.seed(42)
+g1 = np.random.normal(70, 8, 30)
+g2 = np.random.normal(73, 8, 30)
+g3 = np.random.normal(78, 8, 30)
+
+stat, p = f_oneway(g1, g2, g3)
+ans = p
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH02-02", title:"이원 분산 분석",
 q:"교수법(method: A/B)과 성별(gender: M/F)이 점수에 영향을 주는지 이원분산분석을 수행하시오. method 요인의 p-value를 ans에 저장하시오.",
 a:`import pandas as pd
 import numpy as np
@@ -846,8 +1019,10 @@ print(anova_table)
 ans = anova_table.loc["C(method)", "PR(>F)"]
 print(ans)`
 },
+
+// ── CHAPTER 03 카이제곱 검정 ──
 {
-part:"작업형3", sec:"CH06-06", title:"카이제곱 적합도 검정",
+part:"작업형3", sec:"CH03-01", title:"적합도 검정",
 q:"주사위를 120번 던졌을 때 각 면의 관측 빈도가 균등 분포(각 20번)와 다른지 적합도 검정을 수행하고 p-value를 ans에 저장하시오.",
 a:`import numpy as np
 from scipy.stats import chisquare
@@ -856,34 +1031,11 @@ observed = np.array([18, 22, 17, 25, 15, 23])
 expected = np.array([20, 20, 20, 20, 20, 20])
 
 stat, p = chisquare(f_obs=observed, f_exp=expected)
-print(f"χ² 통계량: {stat:.4f}")
-print(f"p-value  : {p:.4f}")
-
-if p < 0.05:
-    print("→ 균등 분포와 유의한 차이 있음")
-else:
-    print("→ 균등 분포와 차이 없음")
-
 ans = p
 print(ans)`
 },
 {
-part:"작업형3", sec:"CH06-04", title:"일원 분산 분석",
-q:"세 그룹 평균 차이가 있는지 일원분산분석을 수행하고 p-value를 ans에 저장하시오.",
-a:`import numpy as np
-from scipy.stats import f_oneway
-
-np.random.seed(42)
-g1 = np.random.normal(70, 8, 30)
-g2 = np.random.normal(73, 8, 30)
-g3 = np.random.normal(78, 8, 30)
-
-stat, p = f_oneway(g1, g2, g3)
-ans = p
-print(ans)`
-},
-{
-part:"작업형3", sec:"CH06-07", title:"카이제곱 독립성 검정",
+part:"작업형3", sec:"CH03-02", title:"독립성 검정",
 q:"성별과 구매여부가 독립인지 카이제곱 독립성 검정을 수행하고 p-value를 ans에 저장하시오.",
 a:`import pandas as pd
 from scipy.stats import chi2_contingency
@@ -898,7 +1050,54 @@ ans = p
 print(ans)`
 },
 {
-part:"작업형3", sec:"CH06-08", title:"다중 선형 회귀 분석",
+part:"작업형3", sec:"CH03-03", title:"동질성 검정",
+q:"세 지역(서울/부산/대구)의 선호 색상 분포가 동일한지 카이제곱 동질성 검정을 수행하고 p-value를 ans에 저장하시오.",
+a:`import pandas as pd
+from scipy.stats import chi2_contingency
+
+table = pd.DataFrame({
+    "red":   [40, 35, 50],
+    "blue":  [30, 45, 20],
+    "green": [30, 20, 30]
+}, index=["Seoul", "Busan", "Daegu"])
+
+stat, p, dof, expected = chi2_contingency(table)
+ans = p
+print(ans)`
+},
+
+// ── CHAPTER 04 회귀 분석 ──
+{
+part:"작업형3", sec:"CH04-01", title:"상관 계수",
+q:"x와 y의 피어슨 상관계수를 구하고 그 값을 ans에 저장하시오.",
+a:`import numpy as np
+from scipy.stats import pearsonr
+
+np.random.seed(42)
+x = np.random.normal(0, 1, 50)
+y = 2*x + np.random.normal(0, 0.5, 50)
+
+r, p = pearsonr(x, y)
+ans = r
+print(round(ans, 4))`
+},
+{
+part:"작업형3", sec:"CH04-02", title:"단순 선형 회귀 분석",
+q:"x로 y를 설명하는 단순 선형 회귀를 적합하고 x의 회귀계수(기울기)를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+from statsmodels.formula.api import ols
+
+np.random.seed(42)
+df = pd.DataFrame({"x": np.random.normal(0, 1, 100)})
+df["y"] = 3 + 2*df["x"] + np.random.normal(0, 1, 100)
+
+model = ols("y ~ x", data=df).fit()
+ans = model.params["x"]
+print(round(ans, 4))`
+},
+{
+part:"작업형3", sec:"CH04-03", title:"다중 선형 회귀 분석",
 q:"y를 x1, x2로 설명하는 다중회귀를 적합하고 x1의 p-value를 ans에 저장하시오.",
 a:`import pandas as pd
 import numpy as np
@@ -916,7 +1115,30 @@ ans = model.pvalues["x1"]
 print(ans)`
 },
 {
-part:"작업형3", sec:"CH06-09", title:"로지스틱 회귀 분석",
+part:"작업형3", sec:"CH04-04", title:"범주형 변수 회귀분석",
+q:"수치형 x1과 범주형 group(A/B/C)으로 y를 설명하는 회귀를 적합하시오. group B의 회귀계수를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+from statsmodels.formula.api import ols
+
+np.random.seed(42)
+n = 120
+df = pd.DataFrame({
+    "x1": np.random.normal(0, 1, n),
+    "group": np.random.choice(["A","B","C"], n)
+})
+df["y"] = 3 + 2*df["x1"]
+df["y"] += np.where(df["group"]=="B", 3, np.where(df["group"]=="C", 6, 0))
+df["y"] += np.random.normal(0, 1, n)
+
+model = ols("y ~ x1 + C(group)", data=df).fit()
+ans = model.params["C(group)[T.B]"]
+print(round(ans, 4))`
+},
+
+// ── CHAPTER 05 로지스틱 회귀 분석 ──
+{
+part:"작업형3", sec:"CH05-01", title:"로지스틱 회귀 분석",
 q:"age와 income으로 binary target을 예측하는 로지스틱 회귀를 적합하고 age의 p-value를 ans에 저장하시오.",
 a:`import pandas as pd
 import numpy as np
@@ -936,6 +1158,225 @@ X = sm.add_constant(df5[["age", "income"]])
 model = sm.Logit(df5["target"], X).fit(disp=False)
 
 ans = model.pvalues["age"]
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH05-02", title:"오즈와 오즈비",
+q:"로지스틱 회귀를 적합한 뒤 age 변수의 오즈비(Odds Ratio)를 구해 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+
+np.random.seed(42)
+n = 200
+df5 = pd.DataFrame({
+    "age": np.random.randint(20, 70, n),
+    "income": np.random.randint(2000, 10000, n)
+})
+logit = -6 + 0.06*df5["age"] + 0.0004*df5["income"]
+prob = 1 / (1 + np.exp(-logit))
+df5["target"] = np.random.binomial(1, prob)
+
+X = sm.add_constant(df5[["age", "income"]])
+model = sm.Logit(df5["target"], X).fit(disp=False)
+
+ans = np.exp(model.params["age"])
+print(round(ans, 4))`
+},
+{
+part:"작업형3", sec:"CH05-03", title:"범주형 변수의 오즈비",
+q:"수치형 age와 범주형 group(A/B/C)으로 로지스틱 회귀를 적합하고 group C의 오즈비를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+from statsmodels.formula.api import logit
+
+np.random.seed(42)
+n = 150
+df = pd.DataFrame({
+    "age":   np.random.randint(20, 60, n),
+    "group": np.random.choice(["A","B","C"], n)
+})
+lv = -3 + 0.04*df["age"]
+lv += np.where(df["group"]=="B", 0.5, np.where(df["group"]=="C", 1.2, 0))
+prob = 1/(1+np.exp(-lv))
+df["target"] = np.random.binomial(1, prob)
+
+model = logit("target ~ age + C(group)", data=df).fit(disp=False)
+ans = np.exp(model.params["C(group)[T.C]"])
+print(round(ans, 4))`
+},
+{
+part:"작업형3", sec:"CH05-04", title:"로지스틱 회귀 모델의 예측",
+q:"로지스틱 회귀로 예측 확률을 구하고 임계값 0.5 기준으로 분류했을 때 양성(1)으로 예측된 행의 개수를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+
+np.random.seed(42)
+n = 200
+df5 = pd.DataFrame({
+    "age": np.random.randint(20, 70, n),
+    "income": np.random.randint(2000, 10000, n)
+})
+logit = -6 + 0.06*df5["age"] + 0.0004*df5["income"]
+prob_true = 1/(1+np.exp(-logit))
+df5["target"] = np.random.binomial(1, prob_true)
+
+X = sm.add_constant(df5[["age", "income"]])
+model = sm.Logit(df5["target"], X).fit(disp=False)
+
+pred_prob = model.predict(X)
+pred_cls = (pred_prob >= 0.5).astype(int)
+ans = pred_cls.sum()
+print(ans)`
+},
+
+// ── CHAPTER 06 작업형3 연습문제 ──
+{
+part:"작업형3", sec:"CH06-01", title:"단일 표본 검정",
+q:"어떤 제품의 무게가 평균 500g인지 단일표본 t검정으로 확인하고 p-value를 ans에 저장하시오.",
+a:`import numpy as np
+from scipy.stats import ttest_1samp
+
+np.random.seed(0)
+weight = np.random.normal(503, 6, 40)
+
+stat, p = ttest_1samp(weight, popmean=500)
+ans = p
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH06-02", title:"독립 표본 검정",
+q:"신약 투여군과 위약군의 혈압 변화 평균에 차이가 있는지 독립표본 t검정으로 확인하고 p-value를 ans에 저장하시오.",
+a:`import numpy as np
+from scipy.stats import ttest_ind
+
+np.random.seed(0)
+drug = np.random.normal(-8, 5, 40)
+placebo = np.random.normal(-5, 5, 40)
+
+stat, p = ttest_ind(drug, placebo, equal_var=False)
+ans = p
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH06-03", title:"대응 표본 검정",
+q:"다이어트 프로그램 전후 체중 차이가 있는지 대응표본 t검정으로 확인하고 p-value를 ans에 저장하시오.",
+a:`import numpy as np
+from scipy.stats import ttest_rel
+
+np.random.seed(0)
+before = np.random.normal(75, 8, 35)
+after = before - np.random.normal(2, 3, 35)
+
+stat, p = ttest_rel(before, after)
+ans = p
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH06-04", title:"일원 분산 분석",
+q:"세 가지 비료(A/B/C)에 따른 수확량 평균에 차이가 있는지 일원분산분석으로 확인하고 p-value를 ans에 저장하시오.",
+a:`import numpy as np
+from scipy.stats import f_oneway
+
+np.random.seed(0)
+a = np.random.normal(50, 6, 30)
+b = np.random.normal(54, 6, 30)
+c = np.random.normal(52, 6, 30)
+
+stat, p = f_oneway(a, b, c)
+ans = p
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH06-05", title:"이원 분산 분석",
+q:"비료 종류(fert)와 토양(soil)이 수확량에 영향을 주는지 이원분산분석을 수행하고 fert 요인의 p-value를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+from statsmodels.formula.api import ols
+from statsmodels.stats.anova import anova_lm
+
+np.random.seed(0)
+n = 90
+df = pd.DataFrame({
+    "yield": np.random.normal(50, 7, n),
+    "fert": np.random.choice(["A","B","C"], n),
+    "soil": np.random.choice(["X","Y"], n)
+})
+df["yield"] += np.where(df["fert"]=="B", 4, np.where(df["fert"]=="C", 2, 0))
+
+model = ols("Q('yield') ~ C(fert) + C(soil) + C(fert):C(soil)", data=df).fit()
+anova_table = anova_lm(model, typ=2)
+ans = anova_table.loc["C(fert)", "PR(>F)"]
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH06-06", title:"적합도 검정",
+q:"요일별 방문자 수가 균등한지 카이제곱 적합도 검정으로 확인하고 p-value를 ans에 저장하시오.",
+a:`import numpy as np
+from scipy.stats import chisquare
+
+observed = np.array([95, 110, 100, 105, 130, 160, 150])
+expected = np.full(7, observed.sum()/7)
+
+stat, p = chisquare(f_obs=observed, f_exp=expected)
+ans = p
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH06-07", title:"독립성 검정",
+q:"흡연 여부와 폐질환 여부가 독립인지 카이제곱 독립성 검정으로 확인하고 p-value를 ans에 저장하시오.",
+a:`import pandas as pd
+from scipy.stats import chi2_contingency
+
+table = pd.DataFrame({
+    "disease": [50, 20],
+    "no_disease": [30, 100]
+}, index=["smoker", "non_smoker"])
+
+stat, p, dof, expected = chi2_contingency(table)
+ans = p
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH06-08", title:"다중 선형 회귀",
+q:"면적(area)과 방 개수(rooms)로 집값(price)을 설명하는 다중회귀를 적합하고 area의 p-value를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+from statsmodels.formula.api import ols
+
+np.random.seed(0)
+n = 120
+df = pd.DataFrame({
+    "area": np.random.uniform(20, 150, n),
+    "rooms": np.random.randint(1, 6, n)
+})
+df["price"] = 5000 + 300*df["area"] + 2000*df["rooms"] + np.random.normal(0, 5000, n)
+
+model = ols("price ~ area + rooms", data=df).fit()
+ans = model.pvalues["area"]
+print(ans)`
+},
+{
+part:"작업형3", sec:"CH06-09", title:"로지스틱 회귀",
+q:"공부시간(hours)과 출석률(attend)로 합격 여부(pass)를 예측하는 로지스틱 회귀를 적합하고 hours의 p-value를 ans에 저장하시오.",
+a:`import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+
+np.random.seed(0)
+n = 200
+df = pd.DataFrame({
+    "hours": np.random.uniform(0, 10, n),
+    "attend": np.random.uniform(0.5, 1.0, n)
+})
+lv = -5 + 0.7*df["hours"] + 3*df["attend"]
+prob = 1/(1+np.exp(-lv))
+df["pass"] = np.random.binomial(1, prob)
+
+X = sm.add_constant(df[["hours", "attend"]])
+model = sm.Logit(df["pass"], X).fit(disp=False)
+ans = model.pvalues["hours"]
 print(ans)`
 }
 ];
@@ -1101,6 +1542,34 @@ function makeTheory(p){
 
 const partMap = {"작업형1":"t1","작업형2":"t2","작업형3":"t3"};
 
+const chapterMap = {
+  "작업형2": {
+    "CH01":"CHAPTER 01 머신러닝 기초",
+    "CH02":"CHAPTER 02 머신러닝 실습(분류)",
+    "CH03":"CHAPTER 03 머신러닝 평가지표",
+    "CH04":"CHAPTER 04 머신러닝 실습(회귀)",
+    "CH05":"CHAPTER 05 머신러닝 실습(다중분류)",
+    "CH06":"CHAPTER 06 이진 분류 연습문제",
+    "CH07":"CHAPTER 07 다중 분류 연습문제",
+    "CH08":"CHAPTER 08 회귀 연습문제"
+  },
+  "작업형3": {
+    "CH01":"CHAPTER 01 가설검정",
+    "CH02":"CHAPTER 02 분산 분석",
+    "CH03":"CHAPTER 03 카이제곱 검정",
+    "CH04":"CHAPTER 04 회귀 분석",
+    "CH05":"CHAPTER 05 로지스틱 회귀 분석",
+    "CH06":"CHAPTER 06 작업형3 연습문제"
+  }
+};
+
+function getChapter(p){
+  if(p.part === "작업형1") return "CHAPTER 03 작업형1 연습문제";
+  const m = p.sec.match(/^CH(\d+)/);
+  const prefix = m ? "CH" + m[1] : "";
+  return (chapterMap[p.part] && chapterMap[p.part][prefix]) || "";
+}
+
 function renderTab(tabId){
   const partKey = Object.keys(partMap).find(k => partMap[k] === tabId);
   const searchId = "search" + tabId.slice(1);
@@ -1121,7 +1590,17 @@ function renderTab(tabId){
     return;
   }
 
+  let lastChapter = null;
   filtered.forEach((p, i) => {
+    const chapter = getChapter(p);
+    if(chapter && chapter !== lastChapter){
+      const head = document.createElement("div");
+      head.className = "chapter-head";
+      head.textContent = chapter;
+      list.appendChild(head);
+      lastChapter = chapter;
+    }
+
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
