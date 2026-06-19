@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PART4 기출 개념 정리 | 빅데이터 분석기사 실기</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --text: #1a1f36;
+      --muted: #5c6370;
+      --border: #e2e8f0;
+      --type1: #2563eb;
+      --type1-bg: #eff6ff;
+      --type2: #059669;
+      --type2-bg: #ecfdf5;
+      --type3: #d97706;
+      --type3-bg: #fffbeb;
+      --accent: #7c3aed;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #7c3aed 100%);
+      color: #fff;
+      padding: 3rem 1.5rem 2.5rem;
+    }
+
+    .hero-inner { max-width: 960px; margin: 0 auto; }
+
+    .hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 700;
+      margin-bottom: .5rem;
+    }
+
+    .hero p { opacity: .9; font-size: .95rem; }
+
+    .hero-links { display:flex; gap:.75rem; flex-wrap:wrap; margin-top:1rem; }
+    .hero-links a { font-size:.85rem; color:#fff; text-decoration:underline; opacity:.9; }
+
+    .badge-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.25rem; }
+
+    .badge {
+      display: inline-block;
+      padding: .25rem .75rem;
+      border-radius: 999px;
+      font-size: .8rem;
+      font-weight: 600;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.25);
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    nav.toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    nav.toc h2 {
+      font-size: .85rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      margin-bottom: .75rem;
+    }
+
+    nav.toc ol {
+      padding-left: 1.25rem;
+      columns: 2;
+      column-gap: 2rem;
+    }
+
+    @media (max-width: 600px) { nav.toc ol { columns: 1; } }
+
+    nav.toc a {
+      color: var(--type1);
+      text-decoration: none;
+      font-size: .92rem;
+    }
+
+    nav.toc a:hover { text-decoration: underline; }
+
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    section > h2 {
+      font-size: 1.35rem;
+      margin-bottom: .35rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+
+    section > .subtitle {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .type-tag {
+      display: inline-block;
+      padding: .15rem .55rem;
+      border-radius: 6px;
+      font-size: .75rem;
+      font-weight: 700;
+    }
+
+    .type-tag.t1 { background: var(--type1-bg); color: var(--type1); }
+    .type-tag.t2 { background: var(--type2-bg); color: var(--type2); }
+    .type-tag.t3 { background: var(--type3-bg); color: var(--type3); }
+
+    h3 {
+      font-size: 1rem;
+      margin: 1.5rem 0 .75rem;
+      padding-bottom: .4rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    h3:first-of-type { margin-top: 0; }
+
+    h4 {
+      font-size: .92rem;
+      color: var(--muted);
+      margin: 1rem 0 .5rem;
+      font-weight: 600;
+    }
+
+    ul, ol { padding-left: 1.25rem; margin-bottom: .75rem; }
+    li { margin-bottom: .3rem; font-size: .92rem; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .85rem;
+      margin: .75rem 0 1rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: .55rem .7rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    tr:nth-child(even) td { background: #fafbfc; }
+
+    code {
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: .82rem;
+      background: #f1f5f9;
+      padding: .1rem .35rem;
+      border-radius: 4px;
+      color: #be185d;
+    }
+
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem 1.15rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: .8rem;
+      line-height: 1.55;
+      margin: .75rem 0 1rem;
+    }
+
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      background: #fafbfc;
+    }
+
+    .card h4 { margin-top: 0; color: var(--text); }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: .35rem;
+      margin: .75rem 0;
+    }
+
+    .flow span {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      padding: .3rem .65rem;
+      border-radius: 6px;
+      font-size: .82rem;
+    }
+
+    .flow .arrow { color: var(--muted); background: none; border: none; padding: 0; }
+
+    .cheat {
+      background: linear-gradient(135deg, #1e293b, #334155);
+      color: #e2e8f0;
+      border: none;
+    }
+
+    .cheat h2 { color: #fff; }
+    .cheat .subtitle { color: #94a3b8; }
+    .cheat h3 { border-color: #475569; color: #f1f5f9; }
+    .cheat li { color: #cbd5e1; }
+    .cheat code { background: #0f172a; color: #67e8f9; }
+
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: .75rem;
+    }
+
+    .chapter-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .85rem 1rem;
+      font-size: .85rem;
+    }
+
+    .chapter-item strong {
+      display: block;
+      margin-bottom: .35rem;
+      color: var(--accent);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: .8rem;
+      padding: 2rem 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <h1>PART4 기출 개념 정리</h1>
+    <p>빅데이터 분석기사 실기 — 4회~11회 기출유형에서 반복되는 핵심 개념·함수·패턴</p>
+    <div class="badge-row">
+      <span class="badge">ch4 ~ ch11</span>
+      <span class="badge">작업형1 · 2 · 3</span>
+      <span class="badge">pandas · sklearn · statsmodels</span>
+    </div>
+    <div class="hero-links">
+      <a href="index.html">← 메인(문제풀이)</a>
+      <a href="part2_concepts.html">→ PART2 머신러닝 정리 보기</a>
+      <a href="part3_concepts.html">→ PART3 통계분석 정리 보기</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <nav class="toc">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#overview">시험 구조 한눈에</a></li>
+      <li><a href="#type1">작업형1 — 데이터 분석</a></li>
+      <li><a href="#type2">작업형2 — 머신러닝</a></li>
+      <li><a href="#type3">작업형3 — 통계 분석</a></li>
+      <li><a href="#chapters">회차별 출제 테마</a></li>
+      <li><a href="#patterns">반복 패턴 &amp; 난이도</a></li>
+      <li><a href="#cheatsheet">시험 직전 치트시트</a></li>
+    </ol>
+  </nav>
+
+  <!-- OVERVIEW -->
+  <section id="overview">
+    <h2>시험 구조 한눈에</h2>
+    <p class="subtitle">PART4는 실제 기출(4~11회)을 유형별로 정리한 파트입니다.</p>
+
+    <table>
+      <thead>
+        <tr><th>유형</th><th>목표</th><th>핵심 라이브러리</th><th>결과물</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="type-tag t1">작업형1</span></td>
+          <td>CSV 데이터 가공·집계</td>
+          <td><code>pandas</code>, <code>sklearn.preprocessing</code></td>
+          <td>수치 1개 출력 (<code>print</code>)</td>
+        </tr>
+        <tr>
+          <td><span class="type-tag t2">작업형2</span></td>
+          <td>train/test 기반 ML 모델링</td>
+          <td><code>pandas</code>, <code>sklearn</code>, <code>lightgbm</code></td>
+          <td><code>result.csv</code> 제출</td>
+        </tr>
+        <tr>
+          <td><span class="type-tag t3">작업형3</span></td>
+          <td>회귀·로지스틱·가설검정</td>
+          <td><code>statsmodels</code>, <code>scipy.stats</code>, <code>numpy</code></td>
+          <td>수치 1개 출력 (<code>print</code>)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>평가지표 ↔ 문제 유형 매핑</h3>
+    <table>
+      <thead>
+        <tr><th>지표</th><th>함수</th><th>문제 유형</th><th>출제 회차</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>F1 (macro)</td><td><code>f1_score(..., average='macro')</code></td><td>다중/이진 분류</td><td>ch4, ch6, ch9, ch11</td></tr>
+        <tr><td>RMSE</td><td><code>root_mean_squared_error</code></td><td>회귀</td><td>ch5, ch7, ch9, ch10</td></tr>
+        <tr><td>MAE</td><td><code>mean_absolute_error</code></td><td>회귀</td><td>ch8</td></tr>
+        <tr><td>정확도</td><td><code>accuracy_score</code></td><td>로지스틱 분류 성능</td><td>ch7, ch11</td></tr>
+        <tr><td>민감도(재현율)</td><td><code>recall_score</code></td><td>로지스틱 분류 성능</td><td>ch11</td></tr>
+        <tr><td>상관계수</td><td><code>pearsonr</code>, <code>df.corr()</code></td><td>상관분석</td><td>ch7, ch9, ch11</td></tr>
+        <tr><td>카이제곱</td><td><code>chisquare</code></td><td>적합도검정</td><td>ch6</td></tr>
+        <tr><td>t검정</td><td><code>ttest_1samp</code></td><td>단일표본 t검정</td><td>ch11</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- TYPE 1 -->
+  <section id="type1">
+    <h2><span class="type-tag t1">작업형1</span> 데이터 분석 (pandas)</h2>
+    <p class="subtitle">단일 CSV에서 파생변수 → 집계 → 필터 → 최종 수치 1개 출력</p>
+
+    <h3>표준 풀이 흐름</h3>
+    <div class="flow">
+      <span>read_csv</span><span class="arrow">→</span>
+      <span>형변환 / 파생변수</span><span class="arrow">→</span>
+      <span>groupby / quantile / corr</span><span class="arrow">→</span>
+      <span>idxmax / nlargest / iloc</span><span class="arrow">→</span>
+      <span>round / int / print</span>
+    </div>
+
+    <h3>핵심 개념별 함수</h3>
+    <div class="grid-2">
+      <div class="card">
+        <h4>데이터 불러오기 &amp; 형변환</h4>
+        <ul>
+          <li><code>pd.read_csv()</code></li>
+          <li><code>pd.to_datetime()</code> — 날짜형 변환</li>
+          <li><code>.dt.year</code>, <code>.dt.month</code>, <code>.dt.to_period('M')</code></li>
+          <li><code>.dt.total_seconds()</code> — 시간 차이(초→분)</li>
+          <li><code>.astype()</code> — 자료형 변환</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>문자열 처리 (.str)</h4>
+        <ul>
+          <li><code>.str[:n]</code> — 앞 n글자 슬라이싱 (연도 추출)</li>
+          <li><code>.str.contains('C')</code> — 포함 여부</li>
+          <li><code>.str.split()</code>, <code>.str.len()</code> — 단어 수</li>
+          <li><code>.str.count(' ')</code> + 1 — 단어 수 (대안)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>파생변수 &amp; 행 연산</h4>
+        <ul>
+          <li>컬럼 간 사칙연산 (<code>quantity * price</code>)</li>
+          <li><code>df.iloc[:, start:end].sum(axis=1)</code> — 행 합계</li>
+          <li>비율 계산: <code>(a + b) / c</code></li>
+          <li>CAGR: <code>(마지막/처음) ** (1/n) - 1</code></li>
+          <li>조건부 값 변경: <code>df.loc[cond, col] = value</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>필터링 &amp; 조건</h4>
+        <ul>
+          <li>boolean mask: <code>cond1 &amp; cond2</code></li>
+          <li>구간 조건: <code>(x &gt; 0.4) &amp; (x &lt; 0.5)</code></li>
+          <li><code>len(df[cond])</code> — 조건 만족 행 수</li>
+          <li><code>df[cond]</code> — 조건 필터</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>집계 &amp; 그룹</h4>
+        <ul>
+          <li><code>.groupby().mean()</code>, <code>.sum()</code></li>
+          <li><code>.transform('mean')</code> — 그룹별 평균으로 결측 대체</li>
+          <li><code>.value_counts()</code> — 빈도</li>
+          <li><code>pivot_table()</code>, <code>melt()</code> — wide ↔ long</li>
+          <li><code>.unstack()</code> — 피벗 후 변환</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>통계 &amp; 순위</h4>
+        <ul>
+          <li><code>.quantile(0.25)</code>, <code>.quantile(0.75)</code> — IQR</li>
+          <li>IQR 이상치: Q1 − 1.5×IQR, Q3 + 1.5×IQR</li>
+          <li><code>.corr()</code> — 상관계수 행렬</li>
+          <li><code>.idxmax()</code>, <code>.nlargest(n)</code></li>
+          <li><code>.sort_values()</code>, <code>.iloc[n]</code></li>
+          <li><code>.mean()</code>, <code>.median()</code>, <code>.std()</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>결측치 &amp; 중복</h4>
+        <ul>
+          <li><code>.isnull().sum()</code> — 결측 개수</li>
+          <li><code>.fillna(median())</code> — 중앙값 대체</li>
+          <li><code>.dropna()</code> — 결측 행 제거</li>
+          <li><code>.drop_duplicates()</code> — 중복 제거</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>스케일링 (sklearn)</h4>
+        <ul>
+          <li><code>StandardScaler().fit_transform()</code> — ch7</li>
+          <li><code>MinMaxScaler().fit_transform()</code> — ch8</li>
+          <li>스케일링 후 <code>.std()</code> 차이 계산</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>자주 나오는 3단 패턴</h3>
+    <ol>
+      <li><strong>파생변수 만들기</strong> — BMI, 학생/교사 비율, 총 범죄 건수, order_amt 등</li>
+      <li><strong>그룹 집계</strong> — groupby, pivot, 연도별/카테고리별 합계</li>
+      <li><strong>최댓값·순위 행 추출</strong> — idxmax, nlargest, sort_values + iloc</li>
+    </ol>
+  </section>
+
+  <!-- TYPE 2 -->
+  <section id="type2">
+    <h2><span class="type-tag t2">작업형2</span> 머신러닝 (sklearn + LightGBM)</h2>
+    <p class="subtitle">train/test 분리 → EDA → 전처리 → 모델 학습 → result.csv 제출</p>
+
+    <h3>표준 파이프라인</h3>
+    <pre><code>train = pd.read_csv("train.csv")
+test  = pd.read_csv("test.csv")
+
+# EDA
+train.shape, test.shape
+train.info(), train.describe(), train.isnull().sum()
+train['target'].value_counts()   # 분류일 때
+
+# 타겟 분리
+target = train.pop('target')
+
+# 전처리 (둘 중 하나)
+train = pd.get_dummies(train)    # 원-핫 인코딩
+test  = pd.get_dummies(test)
+# 또는 LabelEncoder로 object 컬럼 순회
+
+# 검증 분할
+from sklearn.model_selection import train_test_split
+X_tr, X_val, y_tr, y_val = train_test_split(
+    train, target, test_size=0.2, random_state=0)
+
+# 모델 학습 &amp; 평가
+model.fit(X_tr, y_tr)
+pred = model.predict(X_val)
+# f1_score(y_val, pred, average='macro')  ← 분류
+# root_mean_squared_error(y_val, pred)     ← 회귀
+
+# 최종 예측 &amp; 제출
+pred = model.predict(test)
+pd.DataFrame({'ID': ..., 'target': pred}).to_csv("result.csv", index=False)</code></pre>
+
+    <h3>핵심 개념</h3>
+    <table>
+      <thead>
+        <tr><th>단계</th><th>함수 / 클래스</th><th>설명</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>타겟 분리</td><td><code>train.pop('target')</code></td><td>y 분리 (원본 train에서 제거)</td></tr>
+        <tr><td>원-핫 인코딩</td><td><code>pd.get_dummies()</code></td><td>범주형 → 0/1 더미 (ch4~7, ch9~10)</td></tr>
+        <tr><td>레이블 인코딩</td><td><code>LabelEncoder().fit_transform()</code></td><td>범주형 → 정수 (ch4~8)</td></tr>
+        <tr><td>스케일링</td><td><code>StandardScaler()</code></td><td>수치형 표준화 (성능 실험용)</td></tr>
+        <tr><td>데이터 분할</td><td><code>train_test_split(..., random_state=0)</code></td><td>검증셋 20%</td></tr>
+        <tr><td>불균형 대응</td><td><code>stratify=target</code>, <code>class_weight='balanced'</code></td><td>ch11 분류</td></tr>
+        <tr><td>교차검증</td><td><code>cross_val_score(cv=5, scoring='f1_macro')</code></td><td>ch6</td></tr>
+      </tbody>
+    </table>
+
+    <h3>모델 비교 순서 (기출 패턴)</h3>
+    <div class="flow">
+      <span>LogisticRegression</span><span class="arrow">→</span>
+      <span>DecisionTree</span><span class="arrow">→</span>
+      <span>RandomForest</span><span class="arrow">→</span>
+      <span>XGBoost</span><span class="arrow">→</span>
+      <span>LightGBM ✓</span>
+    </div>
+    <p style="font-size:.88rem;color:var(--muted);">최종 제출 모델은 대부분 <strong>LightGBM</strong>. 회귀는 RF vs LGBM 비교 후 RMSE/MAE 낮은 쪽 선택.</p>
+
+    <h3>회차별 ML 문제 유형</h3>
+    <table>
+      <thead>
+        <tr><th>회차</th><th>도메인</th><th>타겟</th><th>유형</th><th>평가지표</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>ch4</td><td>고객 세분화</td><td>Segmentation</td><td>다중 분류 (4클래스)</td><td>f1-macro</td></tr>
+        <tr><td>ch5</td><td>중고차</td><td>price</td><td>회귀</td><td>RMSE</td></tr>
+        <tr><td>ch6</td><td>에너지 부하</td><td>Heat_Load</td><td>다중 분류</td><td>f1-macro</td></tr>
+        <tr><td>ch7</td><td>마트 매출</td><td>total</td><td>회귀</td><td>RMSE</td></tr>
+        <tr><td>ch8</td><td>통신 이탈</td><td>TotalCharges</td><td>회귀</td><td>MAE</td></tr>
+        <tr><td>ch9</td><td>농약 검출</td><td>농약검출여부</td><td>이진/다중 분류</td><td>f1-macro</td></tr>
+        <tr><td>ch10</td><td>가스 사용량</td><td>총가스사용량</td><td>회귀</td><td>RMSE</td></tr>
+        <tr><td>ch11</td><td>게임 레벨</td><td>User_Level</td><td>분류 (불균형)</td><td>f1-macro</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- TYPE 3 -->
+  <section id="type3">
+    <h2><span class="type-tag t3">작업형3</span> 통계 분석 (statsmodels + scipy)</h2>
+    <p class="subtitle">formula API로 회귀/로지스틱 적합 → p-value·계수·예측 → 수치 1개 출력</p>
+
+    <h3>OLS (다중선형회귀)</h3>
+    <pre><code>from statsmodels.formula.api import ols
+
+model = ols('Y ~ X1 + X2 + X3', data=df).fit()
+print(model.summary())
+
+model.params['X1']          # 회귀계수
+model.pvalues['X1']         # p-value
+model.rsquared              # 결정계수 R²
+sum(model.pvalues[1:] &lt; 0.05)  # 유의한 변수 수 (절편 제외)
+model.predict(new_df)       # 새 데이터 예측</code></pre>
+
+    <h3>Logit (로지스틱 회귀)</h3>
+    <pre><code>from statsmodels.formula.api import logit
+import numpy as np
+
+model = logit('Y ~ age + income + overtime', data=df).fit()
+print(model.summary())
+
+model.params['income']              # 회귀계수
+np.exp(model.params['income'])      # 오즈비 (Odds Ratio)
+model.predict(new_df)               # 확률 (0~1)
+(model.predict(test) &gt; 0.5).astype(int)  # 분류 (임계값 변경 가능)
+
+from sklearn.metrics import accuracy_score, recall_score
+accuracy_score(y_true, y_pred)      # 정확도
+recall_score(y_true, y_pred)        # 민감도(재현율)</code></pre>
+
+    <h3>가설검정</h3>
+    <div class="grid-2">
+      <div class="card">
+        <h4>카이제곱 적합도검정 (ch6)</h4>
+        <pre><code>from scipy.stats import chisquare
+
+# 기대빈도 = 비율 × n
+f_exp = [0.3*n, 0.7*n]
+f_obs = [관찰 빈도]
+stat, p = chisquare(f_obs, f_exp)</code></pre>
+      </div>
+      <div class="card">
+        <h4>단일표본 t검정 (ch11)</h4>
+        <pre><code>from scipy.stats import ttest_1samp
+
+stat, p = ttest_1samp(sample, mu=기준값)</code></pre>
+      </div>
+      <div class="card">
+        <h4>상관분석</h4>
+        <pre><code>df.corr()                    # 상관행렬
+df['A'].corr(df['B'])        # 두 변수
+from scipy.stats import pearsonr
+r, p = pearsonr(x, y)</code></pre>
+      </div>
+      <div class="card">
+        <h4>회귀 성능 평가</h4>
+        <pre><code>from sklearn.metrics import root_mean_squared_error
+rmse = root_mean_squared_error(y_true, y_pred)</code></pre>
+      </div>
+    </div>
+
+    <h3>작업형3 필수 암기 포인트</h3>
+    <table>
+      <thead>
+        <tr><th>개념</th><th>코드</th><th>주의</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>formula 문법</td><td><code>'Y ~ X1 + X2'</code></td><td>범주형은 자동 더미 (<code>diabetic[T.yes]</code>)</td></tr>
+        <tr><td>유의수준 0.05</td><td><code>model.pvalues['변수'] &lt; 0.05</code></td><td>절편(Intercept) 제외하고 세기</td></tr>
+        <tr><td>오즈비</td><td><code>np.exp(회귀계수)</code></td><td>연속변수 ×n 변화: <code>np.exp(coef * n)</code></td></tr>
+        <tr><td>확률→분류</td><td><code>(predict &gt; 임계값).astype(int)</code></td><td>임계값 0.5, 0.3, 0.2 등 문제마다 다름</td></tr>
+        <tr><td>민감도</td><td><code>recall_score</code></td><td>= 재현율 = Recall</td></tr>
+        <tr><td>결정계수</td><td><code>model.rsquared</code></td><td>summary()에서 R-squared 확인</td></tr>
+        <tr><td>train/test 분할</td><td><code>df.iloc[:n]</code>, <code>df[:2000]</code></td><td>문제 조건에 맞게 슬라이싱</td></tr>
+      </tbody>
+    </table>
+
+    <h3>회차별 통계 문제 테마</h3>
+    <table>
+      <thead>
+        <tr><th>회차</th><th>문제1</th><th>문제2</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>ch6</td><td>카이제곱 적합도검정</td><td>OLS 다중선형회귀</td></tr>
+        <tr><td>ch7</td><td>로지스틱 (조개 성별) — 오즈비, accuracy</td><td>상관분석 + OLS (ERP)</td></tr>
+        <tr><td>ch8</td><td>로지스틱 (Churn) — p-value, 오즈비</td><td>OLS (PIQ) — R², predict</td></tr>
+        <tr><td>ch9</td><td>OLS — pearsonr, RMSE</td><td>로지스틱 (retention) — 임계값 0.3</td></tr>
+        <tr><td>ch10</td><td>로지스틱 (퇴사) — 계수, 오즈비, 예측</td><td>OLS (난방) — 계수 합, R², 예측</td></tr>
+        <tr><td>ch11</td><td>로지스틱 (노인 건강) — recall(임계값 0.2)</td><td>t검정 + OLS (프로모션)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- CHAPTERS -->
+  <section id="chapters">
+    <h2>회차별 출제 테마 (작업형1)</h2>
+    <p class="subtitle">각 회차 type1 문제에서 다루는 핵심 키워드</p>
+
+    <div class="chapter-grid">
+      <div class="chapter-item">
+        <strong>ch4 — 기초 pandas</strong>
+        사분위수(IQR) · 복합 조건 필터 · 날짜 파생변수 (<code>dt.year/month</code>)
+      </div>
+      <div class="chapter-item">
+        <strong>ch5 — 파생 &amp; 구간</strong>
+        다중 조건 + 평균 · BMI 파생 · 구간별 인원 · 순전입 + 정렬
+      </div>
+      <div class="chapter-item">
+        <strong>ch6 — datetime &amp; 집계</strong>
+        datetime 차이(분) + groupby · 행 합계 + 비율 · 연도별 범죄 집계
+      </div>
+      <div class="chapter-item">
+        <strong>ch7 — 결측 &amp; 이상치</strong>
+        dropna + value_counts + StandardScaler · 상관계수 idxmax · IQR 이상치
+      </div>
+      <div class="chapter-item">
+        <strong>ch8 — groupby &amp; 스케일링</strong>
+        groupby 평균 + idxmax · 파생비율 + nlargest · MinMaxScaler + std 차이
+      </div>
+      <div class="chapter-item">
+        <strong>ch9 — melt &amp; pivot</strong>
+        pivot/groupby 성별 차이 · melt + 검거율 · transform 결측 대체 + nlargest
+      </div>
+      <div class="chapter-item">
+        <strong>ch10 — str &amp; dt</strong>
+        정답률 groupby + nlargest · dt.to_period 월별 매출 · str 단어수 + 평균 차이
+      </div>
+      <div class="chapter-item">
+        <strong>ch11 — 고급 전처리</strong>
+        연도별 idxmax + CAGR · 결측 median fillna · 취소주문 음수 + groupby 합계
+      </div>
+    </div>
+  </section>
+
+  <!-- PATTERNS -->
+  <section id="patterns">
+    <h2>반복 패턴 &amp; 난이도 흐름</h2>
+    <p class="subtitle">회차가 올라갈수록 등장하는 고급 기법</p>
+
+    <h3>난이도 진행</h3>
+    <table>
+      <thead>
+        <tr><th>구간</th><th>작업형1</th><th>작업형2</th><th>작업형3</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>ch4~5</td><td>기초 pandas</td><td>첫 ML 파이프라인</td><td>— (ch5 type3 없음)</td></tr>
+        <tr><td>ch6~7</td><td>datetime, IQR, 상관</td><td>cross_val_score 도입</td><td>카이제곱, OLS, logit 시작</td></tr>
+        <tr><td>ch8~9</td><td>melt, pivot, transform</td><td>LabelEncoder + LGBM</td><td>statsmodels 본격</td></tr>
+        <tr><td>ch10~11</td><td>str/dt 고급, CAGR</td><td>불균형 분류 대응</td><td>t검정, recall, 임계값 변경</td></tr>
+      </tbody>
+    </table>
+
+    <h3>전처리 방법 비교 (작업형2)</h3>
+    <table>
+      <thead>
+        <tr><th>방법</th><th>코드</th><th>특징</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>원-핫 인코딩</td><td><code>pd.get_dummies()</code></td><td>범주별 0/1 컬럼 생성, train/test 컬럼 수 맞춤 필요</td></tr>
+        <tr><td>레이블 인코딩</td><td><code>LabelEncoder</code> loop</td><td>정수 변환, 트리 모델에 적합</td></tr>
+        <tr><td>표준화</td><td><code>StandardScaler</code></td><td>수치형 컬럼, LR 등에 효과</td></tr>
+        <tr><td>ID 제거</td><td><code>train.drop('ID')</code></td><td>성능 실험 — 보통 제거 안 함</td></tr>
+      </tbody>
+    </table>
+
+    <h3>idxmax vs nlargest vs sort_values</h3>
+    <p style="font-size:.9rem;margin-bottom:.5rem;">같은 문제를 여러 방법으로 풀 수 있음 — 시험에서는 편한 방법 선택.</p>
+    <pre><code># 최댓값 인덱스
+df['col'].idxmax()
+df.loc[df['col'].idxmax()]
+
+# 상위 n개
+df['col'].nlargest(3)
+df.nlargest(3, 'col')
+
+# 정렬 후 n번째
+df.sort_values('col', ascending=False).iloc[2]</code></pre>
+  </section>
+
+  <!-- CHEAT SHEET -->
+  <section id="cheatsheet" class="cheat">
+    <h2>시험 직전 치트시트</h2>
+    <p class="subtitle">유형별 최소 코드 뼈대 — 이 흐름만 기억하면 됩니다</p>
+
+    <h3>작업형1</h3>
+    <pre><code>import pandas as pd
+df = pd.read_csv("data.csv")
+
+# 1) 형변환 / 파생변수
+# 2) groupby / quantile / corr
+# 3) idxmax / nlargest / iloc
+# 4) round(x, 3) 또는 int(x)
+print(...)</code></pre>
+
+    <h3>작업형2</h3>
+    <pre><code>target = train.pop('타겟')
+train = pd.get_dummies(train); test = pd.get_dummies(test)
+X_tr, X_val, y_tr, y_val = train_test_split(train, target, test_size=0.2, random_state=0)
+model = lgb.LGBMClassifier(random_state=0, verbose=-1)  # or Regressor
+model.fit(X_tr, y_tr)
+print(f1_score(y_val, model.predict(X_val), average='macro'))  # 분류
+# print(root_mean_squared_error(y_val, model.predict(X_val)))  # 회귀
+pred = model.predict(test)
+pd.DataFrame({...}).to_csv("result.csv", index=False)</code></pre>
+
+    <h3>작업형3</h3>
+    <pre><code>from statsmodels.formula.api import ols, logit
+import numpy as np
+
+model = logit('Y ~ X1 + X2', data=df).fit()   # or ols(...)
+print(round(model.params['X1'], 3))            # 회귀계수
+print(round(np.exp(model.params['X1']), 3))     # 오즈비
+print(sum(model.pvalues[1:] &lt; 0.05))           # 유의 변수 수
+print(round(model.rsquared, 3))                # R² (OLS)
+print(round(model.predict(new_df)[0], 3))      # 예측</code></pre>
+  </section>
+
+</main>
+
+<footer>
+  PART4 기출 개념 정리 · 빅데이터 분석기사 실기 대비용
+</footer>
+
+</body>
+</html>

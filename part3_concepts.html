@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PART3 작업형3 통계 이론 + 코드 정리 | 빅데이터 분석기사 실기</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --text: #1a1f36;
+      --muted: #5c6370;
+      --border: #e2e8f0;
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+      --blue: #2563eb;
+      --blue-bg: #eff6ff;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --green: #059669;
+      --green-bg: #ecfdf5;
+      --purple: #7c3aed;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.65;
+    }
+    .hero {
+      background: linear-gradient(135deg, #7c2d12 0%, #d97706 55%, #b45309 100%);
+      color: #fff; padding: 3rem 1.5rem 2.5rem;
+    }
+    .hero-inner { max-width: 980px; margin: 0 auto; }
+    .hero h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; margin-bottom: .5rem; }
+    .hero p { opacity: .92; font-size: .95rem; }
+    .badge-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.25rem; }
+    .badge {
+      display: inline-block; padding: .25rem .75rem; border-radius: 999px;
+      font-size: .8rem; font-weight: 600; background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.25);
+    }
+    .container { max-width: 980px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    nav.toc {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.25rem 1.5rem; margin-bottom: 2rem; box-shadow: var(--shadow);
+    }
+    nav.toc h2 {
+      font-size: .85rem; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--muted); margin-bottom: .75rem;
+    }
+    nav.toc ol { padding-left: 1.25rem; columns: 2; column-gap: 2rem; }
+    @media (max-width: 600px) { nav.toc ol { columns: 1; } }
+    nav.toc a { color: var(--amber); text-decoration: none; font-size: .92rem; }
+    nav.toc a:hover { text-decoration: underline; }
+    section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.75rem; margin-bottom: 1.5rem; box-shadow: var(--shadow);
+    }
+    section > h2 { font-size: 1.35rem; margin-bottom: .35rem; }
+    section > .subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 1.25rem; }
+    h3 {
+      font-size: 1.05rem; margin: 1.5rem 0 .75rem; padding-bottom: .4rem;
+      border-bottom: 2px solid var(--border);
+    }
+    h3:first-of-type { margin-top: 0; }
+    h4 { font-size: .92rem; color: var(--muted); margin: 1rem 0 .5rem; font-weight: 600; }
+    ul, ol { padding-left: 1.25rem; margin-bottom: .75rem; }
+    li { margin-bottom: .3rem; font-size: .92rem; }
+    table { width: 100%; border-collapse: collapse; font-size: .85rem; margin: .75rem 0 1rem; }
+    th, td { border: 1px solid var(--border); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { background: #f8fafc; font-weight: 600; }
+    tr:nth-child(even) td { background: #fafbfc; }
+    code {
+      font-family: "SF Mono", "Fira Code", Consolas, monospace; font-size: .82rem;
+      background: #f1f5f9; padding: .1rem .35rem; border-radius: 4px; color: #be185d;
+    }
+    pre {
+      background: #1e293b; color: #e2e8f0; padding: 1rem 1.15rem; border-radius: 8px;
+      overflow-x: auto; font-size: .8rem; line-height: 1.55; margin: .75rem 0 1rem;
+    }
+    pre code { background: none; color: inherit; padding: 0; }
+    .theory {
+      background: var(--blue-bg); border-left: 4px solid var(--blue);
+      padding: .9rem 1.1rem; border-radius: 6px; margin: 1rem 0; font-size: .9rem;
+    }
+    .theory strong { color: var(--blue); }
+    .tip {
+      background: var(--amber-bg); border-left: 4px solid var(--amber);
+      padding: .9rem 1.1rem; border-radius: 6px; margin: 1rem 0; font-size: .9rem;
+    }
+    .tip strong { color: var(--amber); }
+    .h0 {
+      background: var(--red-bg); border-left: 4px solid var(--red);
+      padding: .9rem 1.1rem; border-radius: 6px; margin: 1rem 0; font-size: .9rem;
+    }
+    .h0 strong { color: var(--red); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; background: #fafbfc; }
+    .card h4 { margin-top: 0; color: var(--text); }
+    footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 2rem 1rem; }
+    .nav-links { display:flex; gap:.75rem; flex-wrap:wrap; margin-top:1rem; }
+    .nav-links a { font-size:.85rem; color:#fff; text-decoration:underline; opacity:.9; }
+    .decision {
+      display:flex; gap:1rem; flex-wrap:wrap; margin:1rem 0;
+    }
+    .decision .box { flex:1; min-width:240px; border-radius:8px; padding:1rem; }
+    .decision .reject { background:var(--red-bg); border:1px solid #fca5a5; }
+    .decision .accept { background:var(--green-bg); border:1px solid #6ee7b7; }
+    .decision .box strong { display:block; margin-bottom:.35rem; }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <h1>PART3 · 작업형3 통계 이론 + 코드 정리</h1>
+    <p>가설검정 · 분산분석 · 카이제곱 · 회귀 — 교재 완성 코드(ch1~ch6) 기반 통계 이론 + 코드</p>
+    <div class="badge-row">
+      <span class="badge">t-검정</span>
+      <span class="badge">ANOVA</span>
+      <span class="badge">카이제곱</span>
+      <span class="badge">선형회귀</span>
+      <span class="badge">로지스틱</span>
+      <span class="badge">scipy · statsmodels</span>
+    </div>
+    <div class="nav-links">
+      <a href="index.html">← 메인(문제풀이)</a>
+      <a href="part2_concepts.html">→ PART2 머신러닝 정리 보기</a>
+      <a href="part4_concepts.html">→ PART4 기출 개념 보기</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <nav class="toc">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#basics">가설검정 기본 이론</a></li>
+      <li><a href="#ttest">ch1 · t-검정 (가설검정)</a></li>
+      <li><a href="#anova">ch2 · 분산분석 (ANOVA)</a></li>
+      <li><a href="#chi">ch3 · 카이제곱검정</a></li>
+      <li><a href="#linear">ch4 · 선형회귀 &amp; 상관</a></li>
+      <li><a href="#logistic">ch5 · 로지스틱 회귀</a></li>
+      <li><a href="#decision">검정 선택 가이드</a></li>
+    </ol>
+  </nav>
+
+  <!-- BASICS -->
+  <section id="basics">
+    <h2>가설검정 기본 이론</h2>
+    <p class="subtitle">작업형3의 모든 문제가 이 틀 위에 있습니다.</p>
+    <div class="h0">
+      <strong>귀무가설(H₀) vs 대립가설(H₁).</strong>
+      <ul style="margin:.5rem 0 0;">
+        <li><strong>H₀</strong>: "차이/효과/관계가 없다" (기존 통념, 기본 가정)</li>
+        <li><strong>H₁</strong>: "차이/효과/관계가 있다" (입증하고 싶은 주장)</li>
+      </ul>
+    </div>
+    <div class="theory">
+      <strong>p-value.</strong> H₀가 참이라고 가정했을 때, 관측된 것만큼 극단적인 결과가 나올 확률. p가 작으면 "H₀ 가정으로는 이 데이터가 거의 안 나온다" → H₀를 기각.
+    </div>
+    <div class="decision">
+      <div class="box reject">
+        <strong>p &lt; 0.05</strong>
+        H₀ <b>기각</b> → 대립가설 채택<br>"유의한 차이/효과/관계가 있다"
+      </div>
+      <div class="box accept">
+        <strong>p ≥ 0.05</strong>
+        H₀ 기각 못함 (채택)<br>"유의한 차이가 없다"
+      </div>
+    </div>
+    <div class="tip">
+      <strong>단측/양측 (<code>alternative</code>).</strong>
+      <code>'two-sided'</code>(≠, 기본), <code>'greater'</code>(첫 인자가 더 큼), <code>'less'</code>(첫 인자가 더 작음). 문제에서 "더 크다/작다/감소"가 나오면 단측 검정.
+    </div>
+  </section>
+
+  <!-- TTEST -->
+  <section id="ttest">
+    <h2>ch1 · t-검정 (가설검정)</h2>
+    <p class="subtitle">평균 비교. 정규성·등분산 전제 확인 → 위반 시 비모수 대안.</p>
+
+    <h3>세 가지 t-검정</h3>
+    <table>
+      <thead><tr><th>검정</th><th>함수</th><th>용도</th><th>H₀</th></tr></thead>
+      <tbody>
+        <tr><td>단일표본</td><td><code>ttest_1samp(x, μ₀)</code></td><td>표본 평균 vs 기준값</td><td>μ = μ₀</td></tr>
+        <tr><td>대응표본</td><td><code>ttest_rel(a, b)</code></td><td>같은 대상 전·후 비교</td><td>μ_diff = 0</td></tr>
+        <tr><td>독립표본</td><td><code>ttest_ind(a, b)</code></td><td>두 독립 집단 평균 비교</td><td>μ₁ = μ₂</td></tr>
+      </tbody>
+    </table>
+
+    <h3>전제 검정 (먼저 확인)</h3>
+    <div class="grid-2">
+      <div class="card">
+        <h4>정규성 — Shapiro-Wilk</h4>
+        <pre><code>from scipy import stats
+stat, p = stats.shapiro(x)
+# H0: 정규분포를 따른다
+# p &lt; 0.05 → 정규성 위반 → 비모수 검정</code></pre>
+      </div>
+      <div class="card">
+        <h4>등분산 — Levene</h4>
+        <pre><code>stat, p = stats.levene(a, b)
+# H0: 두 집단 분산이 같다
+# p &lt; 0.05 → ttest_ind(equal_var=False) (Welch)</code></pre>
+      </div>
+    </div>
+
+    <h3>비모수 대안 (정규성 위반 시)</h3>
+    <table>
+      <thead><tr><th>모수 검정</th><th>→ 비모수 대안</th><th>함수</th></tr></thead>
+      <tbody>
+        <tr><td>대응표본 t</td><td>윌콕슨 부호순위</td><td><code>wilcoxon(a, b)</code></td></tr>
+        <tr><td>독립표본 t</td><td>맨-휘트니 U</td><td><code>mannwhitneyu(a, b)</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>코드 패턴</h3>
+    <pre><code>from scipy import stats
+
+# 단일표본: 평균이 95보다 작은가? (단측)
+stat, p = stats.ttest_1samp(df['x'], 95, alternative='less')
+
+# 독립표본: 등분산 확인 후
+stat, p = stats.levene(a, b)
+stat, p = stats.ttest_ind(a, b, equal_var=True, alternative='two-sided')
+
+# 대응표본: 차이 컬럼 활용
+df['diff'] = df['after'] - df['before']
+stat, p = stats.ttest_rel(df['after'], df['before'], alternative='greater')
+
+print(round(stat, 3), round(p, 4))</code></pre>
+    <div class="tip"><strong>실전 흐름.</strong> ① <code>shapiro</code>로 정규성 → ② 독립표본이면 <code>levene</code>로 등분산 → ③ 만족하면 t-검정, 위반하면 비모수.</div>
+  </section>
+
+  <!-- ANOVA -->
+  <section id="anova">
+    <h2>ch2 · 분산분석 (ANOVA)</h2>
+    <p class="subtitle">3집단 이상의 평균을 동시에 비교. t-검정을 여러 번 하면 오류가 누적되므로 ANOVA 사용.</p>
+
+    <div class="theory">
+      <strong>이론.</strong> ANOVA는 "집단 간 분산 / 집단 내 분산" = <strong>F비</strong>로 검정합니다. 집단 간 변동이 집단 내 변동보다 충분히 크면 평균이 다르다고 판단. <strong>전제</strong>: 정규성, 등분산, 독립성.
+    </div>
+
+    <h3>일원 분산분석 (One-way) — 요인 1개</h3>
+    <div class="h0"><strong>H₀:</strong> 모든 집단 평균이 같다 (μ₁ = μ₂ = … = μ_k) · <strong>H₁:</strong> 적어도 하나는 다르다</div>
+    <pre><code># 방법1) scipy 간편
+from scipy import stats
+stat, p = stats.f_oneway(A, B, C, D)
+
+# 방법2) statsmodels (회귀 틀)
+from statsmodels.formula.api import ols
+from statsmodels.stats.anova import anova_lm
+model = ols('성장 ~ C(비료)', data=df).fit()
+print(anova_lm(model))   # F, PR(&gt;F) 확인</code></pre>
+    <div class="tip"><code>C(비료)</code>의 <code>C()</code>는 범주형 처리 지시자. <code>PR(&gt;F)</code>가 p-value입니다.</div>
+
+    <h3>이원 분산분석 (Two-way) — 요인 2개 + 상호작용</h3>
+    <pre><code>model = ols('수확량 ~ C(비료) * C(물주기)', data=df).fit()
+print(sm.stats.anova_lm(model))
+# C(비료):C(물주기) 행 = 상호작용 효과</code></pre>
+    <table>
+      <thead><tr><th>항</th><th>의미</th><th>H₀</th></tr></thead>
+      <tbody>
+        <tr><td><code>C(요인A)</code></td><td>요인A 주효과</td><td>A는 평균에 영향 없음</td></tr>
+        <tr><td><code>C(요인B)</code></td><td>요인B 주효과</td><td>B는 평균에 영향 없음</td></tr>
+        <tr><td><code>C(A):C(B)</code></td><td>상호작용</td><td>A 효과가 B에 따라 달라지지 않음</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- CHI -->
+  <section id="chi">
+    <h2>ch3 · 카이제곱검정 (χ²)</h2>
+    <p class="subtitle">범주형 데이터의 빈도(count)를 분석. χ² = Σ(관찰−기대)²/기대.</p>
+
+    <h3>세 가지 카이제곱</h3>
+    <table>
+      <thead><tr><th>검정</th><th>함수</th><th>용도</th></tr></thead>
+      <tbody>
+        <tr><td>적합도</td><td><code>chisquare(관찰, 기대)</code></td><td>관찰 빈도가 특정 분포(비율)를 따르는가</td></tr>
+        <tr><td>독립성</td><td><code>chi2_contingency(표)</code></td><td>두 범주형 변수가 독립인가</td></tr>
+        <tr><td>동질성</td><td><code>chi2_contingency(표)</code></td><td>여러 집단의 분포가 동일한가</td></tr>
+      </tbody>
+    </table>
+    <div class="theory"><strong>참고.</strong> 독립성과 동질성은 <em>수학적으로 같은 함수</em>(<code>chi2_contingency</code>)를 쓰며, 연구 설계에 따라 해석만 달라집니다.</div>
+
+    <h3>① 적합도 검정 (Goodness-of-fit)</h3>
+    <div class="h0"><strong>H₀:</strong> 관찰빈도가 기대 비율을 따른다</div>
+    <pre><code>from scipy.stats import chisquare
+n = 300
+observed = [150, 120, 30]
+expected = [0.50*n, 0.35*n, 0.15*n]   # 기대빈도 = 비율 × 전체
+stat, p = chisquare(observed, expected)</code></pre>
+
+    <h3>② 독립성 / 동질성 검정</h3>
+    <div class="h0"><strong>H₀(독립성):</strong> 두 변수는 독립이다 (관계 없다)</div>
+    <pre><code>from scipy.stats import chi2_contingency
+import pandas as pd
+
+# 원자료 → 교차표
+table = pd.crosstab(df['성별'], df['운동'])
+stat, p, dof, expected = chi2_contingency(table)
+print(round(stat, 3), round(p, 4), dof)
+# expected = 기대빈도 (각 셀 ≥ 5 권장)</code></pre>
+    <div class="tip"><strong>주의.</strong> 반환값이 4개(통계량, p값, 자유도, 기대빈도). 기대빈도가 5 미만 셀이 많으면 카이제곱 신뢰도가 떨어집니다.</div>
+  </section>
+
+  <!-- LINEAR -->
+  <section id="linear">
+    <h2>ch4 · 선형회귀 &amp; 상관</h2>
+    <p class="subtitle">연속형 변수 간 관계를 모델링. statsmodels의 OLS와 formula API 사용.</p>
+
+    <h3>상관분석</h3>
+    <table>
+      <thead><tr><th>방법</th><th>함수</th><th>특징</th></tr></thead>
+      <tbody>
+        <tr><td>피어슨</td><td><code>pearsonr(x, y)</code>, <code>df.corr()</code></td><td>선형 관계, 정규성 가정</td></tr>
+        <tr><td>스피어만</td><td><code>spearmanr(x, y)</code></td><td>순위 기반, 단조 관계</td></tr>
+        <tr><td>켄달</td><td><code>kendalltau(x, y)</code></td><td>순위 일치도, 이상치 강건</td></tr>
+      </tbody>
+    </table>
+    <pre><code>from scipy import stats
+r, p = stats.pearsonr(df['키'], df['몸무게'])
+# r: -1~1 상관계수, p: H0(ρ=0) 검정</code></pre>
+
+    <h3>OLS 선형회귀</h3>
+    <div class="theory"><strong>이론.</strong> 최소제곱법(OLS)으로 Y = β₀ + β₁X₁ + … 의 계수를 추정. 각 계수의 p-value는 "이 변수가 Y에 선형 영향을 주는가(H₀: β=0)"를 검정.</div>
+    <pre><code>from statsmodels.formula.api import ols
+
+model = ols('매출액 ~ 광고비 + 직원수', data=df).fit()
+print(model.summary())
+
+model.params['광고비']        # 회귀계수
+model.pvalues['광고비']       # p-value (β=0 검정)
+model.rsquared                # R² (설명력)
+model.predict(new_df)         # 새 데이터 예측
+model.conf_int(alpha=0.05)    # 95% 신뢰구간
+sum(model.pvalues[1:] &lt; 0.05) # 유의 변수 수 (절편 제외)</code></pre>
+    <div class="tip"><strong>범주형 독립변수.</strong> <code>ols('score ~ hours + material_type', ...)</code> — 문자열 컬럼은 자동으로 더미 변수화(<code>material_type[T.도서]</code> 형태, 첫 범주가 기준).</div>
+  </section>
+
+  <!-- LOGISTIC -->
+  <section id="logistic">
+    <h2>ch5 · 로지스틱 회귀</h2>
+    <p class="subtitle">종속변수가 이진(0/1)일 때. 로그-오즈를 선형 모델링하고, 오즈비로 해석.</p>
+
+    <div class="theory">
+      <strong>이론.</strong> 로지스틱 회귀는 확률 p를 직접 모델링하는 대신 <strong>로그-오즈</strong> ln(p/(1−p)) = β₀ + β₁X₁ + … 를 선형으로 적합합니다. 예측값은 0~1 확률.
+    </div>
+
+    <h3>모델 적합 & 핵심 출력</h3>
+    <pre><code>from statsmodels.formula.api import logit
+import numpy as np
+
+model = logit('disease ~ age + bmi + smoker', data=df).fit()
+print(model.summary())
+
+model.params['bmi']                  # 회귀계수 (로그-오즈 변화)
+model.pvalues['bmi']                 # 유의성
+np.exp(model.params['bmi'])          # 오즈비 (OR)
+np.exp(model.params['bmi'] * 3)      # bmi 3단위 증가 시 OR
+model.llf                            # 로그우도
+-2 * model.llf                       # 이탈도(deviance)</code></pre>
+
+    <h3>오즈비(Odds Ratio) 해석</h3>
+    <div class="theory">
+      <strong>OR = exp(β).</strong> 독립변수 1단위 증가 시 오즈가 몇 배 되는지.
+      <ul style="margin:.5rem 0 0;">
+        <li>OR &gt; 1 : 사건 발생 가능성 <strong>증가</strong></li>
+        <li>OR &lt; 1 : 사건 발생 가능성 <strong>감소</strong></li>
+        <li>OR = 1 : 영향 없음</li>
+      </ul>
+    </div>
+
+    <h3>예측 & 분류 성능</h3>
+    <pre><code># 확률 예측 → 임계값으로 분류
+proba = model.predict(test)
+pred = (proba &gt; 0.5).astype(int)     # 임계값 0.4, 0.3 등 문제 조건
+
+from sklearn.metrics import accuracy_score, recall_score
+accuracy_score(y_true, pred)         # 정확도
+recall_score(y_true, pred)           # 민감도(재현율)
+1 - accuracy_score(y_true, pred)     # 오류율
+
+# 가장 위험한(확률 높은) 케이스
+proba.idxmax()</code></pre>
+    <div class="tip"><strong>기준 범주 지정.</strong> <code>C(lifestyle, Treatment("S"))</code> — 'S'를 기준으로 더미 비교.</div>
+  </section>
+
+  <!-- DECISION -->
+  <section id="decision">
+    <h2>검정 선택 가이드</h2>
+    <p class="subtitle">"무슨 검정을 써야 하지?"에 대한 빠른 답.</p>
+    <table>
+      <thead><tr><th>상황</th><th>검정</th><th>함수</th></tr></thead>
+      <tbody>
+        <tr><td>연속형 1개 vs 기준값</td><td>단일표본 t</td><td><code>ttest_1samp</code></td></tr>
+        <tr><td>연속형, 짝지어진 전·후</td><td>대응표본 t / 윌콕슨</td><td><code>ttest_rel</code> / <code>wilcoxon</code></td></tr>
+        <tr><td>연속형, 독립 두 집단</td><td>독립표본 t / 맨휘트니</td><td><code>ttest_ind</code> / <code>mannwhitneyu</code></td></tr>
+        <tr><td>3집단 이상 평균</td><td>일원 ANOVA</td><td><code>f_oneway</code> / <code>anova_lm</code></td></tr>
+        <tr><td>요인 2개의 효과</td><td>이원 ANOVA</td><td><code>ols(...).anova_lm</code></td></tr>
+        <tr><td>관찰빈도 vs 기대분포</td><td>적합도 카이제곱</td><td><code>chisquare</code></td></tr>
+        <tr><td>두 범주형 변수 관계</td><td>독립성 카이제곱</td><td><code>chi2_contingency</code></td></tr>
+        <tr><td>연속 Y ~ 연속 X</td><td>선형회귀 / 상관</td><td><code>ols</code> / <code>pearsonr</code></td></tr>
+        <tr><td>이진 Y ~ 예측변수</td><td>로지스틱 회귀</td><td><code>logit</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>전제 확인 순서 (실전 루틴)</h3>
+    <ol>
+      <li><strong>t-검정</strong>: <code>shapiro</code>(정규성) → 위반 시 비모수</li>
+      <li><strong>독립표본 t</strong>: <code>levene</code>(등분산) → <code>equal_var</code> 결정</li>
+      <li><strong>ANOVA</strong>: 집단별 <code>shapiro</code> + <code>levene</code> → <code>f_oneway</code></li>
+      <li><strong>카이제곱</strong>: 기대빈도 ≥ 5 셀 확인</li>
+    </ol>
+
+    <h3>p-value 판정 한 줄 정리</h3>
+    <div class="decision">
+      <div class="box reject"><strong>p &lt; 0.05</strong> 귀무가설 <b>기각</b> · "유의하다"</div>
+      <div class="box accept"><strong>p ≥ 0.05</strong> 귀무가설 기각 못함 · "유의하지 않다"</div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  PART3 작업형3 통계 이론 + 코드 정리 · 교재 완성 코드 기반 · 빅데이터 분석기사 실기 대비용
+</footer>
+
+</body>
+</html>
