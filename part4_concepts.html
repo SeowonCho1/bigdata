@@ -446,7 +446,9 @@
       <div class="card">
         <h4>스케일링 (sklearn)</h4>
         <ul>
+          <li><code>from sklearn.preprocessing import StandardScaler</code></li>
           <li><code>StandardScaler().fit_transform()</code> — ch7</li>
+          <li><code>from sklearn.preprocessing import MinMaxScaler</code></li>
           <li><code>MinMaxScaler().fit_transform()</code> — ch8</li>
           <li>스케일링 후 <code>.std()</code> 차이 계산</li>
         </ul>
@@ -498,21 +500,67 @@ pred = model.predict(X_val)
 pred = model.predict(test)
 pd.DataFrame({'ID': ..., 'target': pred}).to_csv("result.csv", index=False)</code></pre>
 
-    <h3>핵심 개념</h3>
+    <h3>핵심 개념 (import 포함)</h3>
     <table>
       <thead>
-        <tr><th>단계</th><th>함수 / 클래스</th><th>설명</th></tr>
+        <tr><th>단계</th><th>import</th><th>함수 / 클래스</th><th>설명</th></tr>
       </thead>
       <tbody>
-        <tr><td>타겟 분리</td><td><code>train.pop('target')</code></td><td>y 분리 (원본 train에서 제거)</td></tr>
-        <tr><td>원-핫 인코딩</td><td><code>pd.get_dummies()</code></td><td>범주형 → 0/1 더미 (ch4~7, ch9~10)</td></tr>
-        <tr><td>레이블 인코딩</td><td><code>LabelEncoder().fit_transform()</code></td><td>범주형 → 정수 (ch4~8)</td></tr>
-        <tr><td>스케일링</td><td><code>StandardScaler()</code></td><td>수치형 표준화 (성능 실험용)</td></tr>
-        <tr><td>데이터 분할</td><td><code>train_test_split(..., random_state=0)</code></td><td>검증셋 20%</td></tr>
-        <tr><td>불균형 대응</td><td><code>stratify=target</code>, <code>class_weight='balanced'</code></td><td>ch11 분류</td></tr>
-        <tr><td>교차검증</td><td><code>cross_val_score(cv=5, scoring='f1_macro')</code></td><td>ch6</td></tr>
+        <tr><td>타겟 분리</td><td>— (pandas 내장)</td><td><code>train.pop('target')</code></td><td>y 분리 (원본 train에서 제거)</td></tr>
+        <tr><td>원-핫 인코딩</td><td>— (pandas 내장)</td><td><code>pd.get_dummies()</code></td><td>범주형 → 0/1 더미 (ch4~7, ch9~10)</td></tr>
+        <tr><td>레이블 인코딩</td><td><code>from sklearn.preprocessing import LabelEncoder</code></td><td><code>LabelEncoder().fit_transform()</code></td><td>범주형 → 정수 (ch4~8)</td></tr>
+        <tr><td>스케일링</td><td><code>from sklearn.preprocessing import StandardScaler</code></td><td><code>StandardScaler()</code></td><td>수치형 표준화 (성능 실험용)</td></tr>
+        <tr><td>데이터 분할</td><td><code>from sklearn.model_selection import train_test_split</code></td><td><code>train_test_split(..., random_state=0)</code></td><td>검증셋 20%</td></tr>
+        <tr><td>모델 (분류)</td><td><code>from sklearn.ensemble import RandomForestClassifier</code></td><td><code>RandomForestClassifier(random_state=0)</code></td><td>분류 베이스라인</td></tr>
+        <tr><td>모델 (회귀)</td><td><code>from sklearn.ensemble import RandomForestRegressor</code></td><td><code>RandomForestRegressor(random_state=0)</code></td><td>회귀 베이스라인</td></tr>
+        <tr><td>모델 (LGBM)</td><td><code>import lightgbm as lgb</code></td><td><code>lgb.LGBMClassifier(verbose=-1)</code></td><td>최종 제출용 (분류/회귀)</td></tr>
+        <tr><td>평가 (분류)</td><td><code>from sklearn.metrics import f1_score</code></td><td><code>f1_score(y, pred, average='macro')</code></td><td>다중분류 지표</td></tr>
+        <tr><td>평가 (회귀)</td><td><code>from sklearn.metrics import root_mean_squared_error</code></td><td><code>root_mean_squared_error(y, pred)</code></td><td>회귀 지표 RMSE</td></tr>
+        <tr><td>불균형 대응</td><td>— (모델 인자)</td><td><code>stratify=target</code>, <code>class_weight='balanced'</code></td><td>ch11 분류</td></tr>
+        <tr><td>교차검증</td><td><code>from sklearn.model_selection import cross_val_score</code></td><td><code>cross_val_score(cv=5, scoring='f1_macro')</code></td><td>ch6</td></tr>
       </tbody>
     </table>
+
+    <h3>전처리 예제 (import → 코드)</h3>
+    <div class="grid-2">
+      <div class="card">
+        <h4>레이블 인코딩 예제</h4>
+        <pre><code>from sklearn.preprocessing import LabelEncoder
+
+cols = train.select_dtypes('object').columns
+for col in cols:
+    le = LabelEncoder()
+    train[col] = le.fit_transform(train[col])
+    test[col]  = le.transform(test[col])   # test는 transform만</code></pre>
+      </div>
+      <div class="card">
+        <h4>스케일링 예제</h4>
+        <pre><code>from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+num_cols = ['age', 'income']
+train[num_cols] = scaler.fit_transform(train[num_cols])
+test[num_cols]  = scaler.transform(test[num_cols])</code></pre>
+      </div>
+      <div class="card">
+        <h4>분류 모델 학습·평가 예제</h4>
+        <pre><code>from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score
+
+model = RandomForestClassifier(random_state=0)
+model.fit(X_tr, y_tr)
+pred = model.predict(X_val)
+print(f1_score(y_val, pred, average='macro'))</code></pre>
+      </div>
+      <div class="card">
+        <h4>교차검증 예제</h4>
+        <pre><code>from sklearn.model_selection import cross_val_score
+
+scores = cross_val_score(model, train, target,
+                         cv=5, scoring='f1_macro')
+print(scores.mean())</code></pre>
+      </div>
+    </div>
 
     <h3>모델 비교 순서 (기출 패턴)</h3>
     <div class="flow">
@@ -606,21 +654,51 @@ rmse = root_mean_squared_error(y_true, y_pred)</code></pre>
       </div>
     </div>
 
+    <h3>작업형3 필요한 import 모음</h3>
+    <pre><code>from statsmodels.formula.api import ols, logit       # 회귀 / 로지스틱
+import numpy as np                                    # 오즈비 np.exp
+from scipy.stats import chisquare, ttest_1samp, pearsonr  # 가설검정·상관
+from sklearn.metrics import accuracy_score, recall_score, root_mean_squared_error</code></pre>
+
     <h3>작업형3 필수 암기 포인트</h3>
     <table>
       <thead>
-        <tr><th>개념</th><th>코드</th><th>주의</th></tr>
+        <tr><th>개념</th><th>import</th><th>코드</th><th>주의</th></tr>
       </thead>
       <tbody>
-        <tr><td>formula 문법</td><td><code>'Y ~ X1 + X2'</code></td><td>범주형은 자동 더미 (<code>diabetic[T.yes]</code>)</td></tr>
-        <tr><td>유의수준 0.05</td><td><code>model.pvalues['변수'] &lt; 0.05</code></td><td>절편(Intercept) 제외하고 세기</td></tr>
-        <tr><td>오즈비</td><td><code>np.exp(회귀계수)</code></td><td>연속변수 ×n 변화: <code>np.exp(coef * n)</code></td></tr>
-        <tr><td>확률→분류</td><td><code>(predict &gt; 임계값).astype(int)</code></td><td>임계값 0.5, 0.3, 0.2 등 문제마다 다름</td></tr>
-        <tr><td>민감도</td><td><code>recall_score</code></td><td>= 재현율 = Recall</td></tr>
-        <tr><td>결정계수</td><td><code>model.rsquared</code></td><td>summary()에서 R-squared 확인</td></tr>
-        <tr><td>train/test 분할</td><td><code>df.iloc[:n]</code>, <code>df[:2000]</code></td><td>문제 조건에 맞게 슬라이싱</td></tr>
+        <tr><td>formula 문법</td><td><code>from statsmodels.formula.api import ols, logit</code></td><td><code>'Y ~ X1 + X2'</code></td><td>범주형은 자동 더미 (<code>diabetic[T.yes]</code>)</td></tr>
+        <tr><td>유의수준 0.05</td><td>— (model 속성)</td><td><code>model.pvalues['변수'] &lt; 0.05</code></td><td>절편(Intercept) 제외하고 세기</td></tr>
+        <tr><td>오즈비</td><td><code>import numpy as np</code></td><td><code>np.exp(회귀계수)</code></td><td>연속변수 ×n 변화: <code>np.exp(coef * n)</code></td></tr>
+        <tr><td>확률→분류</td><td>— (model 속성)</td><td><code>(predict &gt; 임계값).astype(int)</code></td><td>임계값 0.5, 0.3, 0.2 등 문제마다 다름</td></tr>
+        <tr><td>민감도</td><td><code>from sklearn.metrics import recall_score</code></td><td><code>recall_score(y, pred)</code></td><td>= 재현율 = Recall</td></tr>
+        <tr><td>정확도</td><td><code>from sklearn.metrics import accuracy_score</code></td><td><code>accuracy_score(y, pred)</code></td><td>오류율 = 1 − accuracy</td></tr>
+        <tr><td>RMSE</td><td><code>from sklearn.metrics import root_mean_squared_error</code></td><td><code>root_mean_squared_error(y, pred)</code></td><td>회귀 성능 평가</td></tr>
+        <tr><td>카이제곱</td><td><code>from scipy.stats import chisquare</code></td><td><code>chisquare(f_obs, f_exp)</code></td><td>기대빈도 = 비율 × n</td></tr>
+        <tr><td>t검정</td><td><code>from scipy.stats import ttest_1samp</code></td><td><code>ttest_1samp(sample, 기준값)</code></td><td>단측은 <code>alternative</code> 지정</td></tr>
+        <tr><td>상관계수</td><td><code>from scipy.stats import pearsonr</code></td><td><code>pearsonr(x, y)</code></td><td>r, p 반환</td></tr>
+        <tr><td>결정계수</td><td>— (model 속성)</td><td><code>model.rsquared</code></td><td>summary()에서 R-squared 확인</td></tr>
+        <tr><td>train/test 분할</td><td>— (pandas 슬라이싱)</td><td><code>df.iloc[:n]</code>, <code>df[:2000]</code></td><td>문제 조건에 맞게 슬라이싱</td></tr>
       </tbody>
     </table>
+
+    <h3>로지스틱 회귀 전체 예제 (import → 코드)</h3>
+    <pre><code>from statsmodels.formula.api import logit
+import numpy as np
+from sklearn.metrics import accuracy_score, recall_score
+
+# 1) 모델 적합
+model = logit('disease ~ age + bmi + smoker', data=train).fit()
+print(model.summary())
+
+# 2) 회귀계수 / 오즈비
+print(round(model.params['bmi'], 3))            # 회귀계수
+print(round(np.exp(model.params['bmi']), 3))     # 오즈비
+
+# 3) 예측 → 임계값 분류 → 성능
+proba = model.predict(test)
+pred  = (proba &gt; 0.5).astype(int)
+print(round(accuracy_score(y_true, pred), 3))    # 정확도
+print(round(recall_score(y_true, pred), 3))      # 민감도</code></pre>
 
     <h3>회차별 통계 문제 테마</h3>
     <table>
